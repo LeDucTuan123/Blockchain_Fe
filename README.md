@@ -1,30 +1,24 @@
 # E-Commerce Website
 
-A Ecommerce Website made with React.js Framework.
-
+- Dự án bán tranh NFT
 
 ## Demo
 
-https://reactjs-ecommerce-app.vercel.app/
-
-## Features
+<!-- ## Features
 
 - Easy to integrate with Backend
-- Fully Responsive
-
+- Fully Responsive -->
 
 ## Screenshots
 
-![App Screenshot](https://i.ibb.co/fQ293tm/image.png)
-
-
+![App Screenshot](https://i.seadn.io/s/primary-drops/0x7e50af303a0422ebec6bc198034a2430bbe0195c/32578588:about:media:fac757ed-80e3-47ba-b2ec-365eeb04f070.gif?auto=format&dpr=1&w=1920)
 
 ## Run Locally
 
 Clone the project
 
 ```bash
-  git clone https://github.com/ssahibsingh/React_E-Commerce
+  git clone https://github.com/LeDucTuan123/Blockchain_Fe.git
 ```
 
 Go to the project directory
@@ -45,23 +39,13 @@ Start the server
   npm start
 ```
 
-
-
 ## Tech Stack
 
-* [React](https://reactjs.org/)
-* [Redux](https://redux.js.org/)
-* [Bootstrap](https://getbootstrap.com/)
-* [Fake Store API](https://fakestoreapi.com/)
+- [React](https://reactjs.org/)
+- [Redux](https://redux.js.org/)
+- [Bootstrap](https://getbootstrap.com/)
+- [Fake Store API](https://fakestoreapi.com/)
 
-## Contributing
+<!-- ## Contributing -->
 
-Contributions are always welcome!
-Just raise an issue, we will discuss it.
-
-
-## Feedback
-
-If you have any feedback, please reach out to me [here](https://ssahibsingh.github.io/#contact)
-
-
+<!-- ## Feedback -->
