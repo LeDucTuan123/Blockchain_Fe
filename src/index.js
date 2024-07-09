@@ -18,7 +18,7 @@ import {
   Checkout,
   PageNotFound,
 } from "./pages";
-import DetailProduct from "./pages/DetailProduct";
+// import DetailProduct from "./pages/DetailProduct";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,7 +37,8 @@ root.render(
         {/* <Route path="/checkout" element={<Checkout />} /> */}
         <Route path="*" element={<PageNotFound />} />
         <Route path="/product/*" element={<PageNotFound />} />
-        <Route path="/product/dt" element={<DetailProduct />} />
+        <Route path="/profile/" element={<PageNotFound />} />
+        {/* <Route path="/product/dt" element={<DetailProduct />} /> */}
       </Routes>
     </Provider>
   </BrowserRouter>
