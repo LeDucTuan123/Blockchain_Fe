@@ -19,9 +19,10 @@ import {
   PageNotFound,
 } from "./pages";
 // import Routee from "./route";
-import { ProfileLayout } from "./ProfileLayout";
+import { ProfileLayout } from "./layouts/ProfileLayout";
 import { Profile } from "./pages/Profile/Profile";
 import { Orther } from "./pages/Profile/Orther";
+import { ProductPainting } from "./pages/Profile/Product";
 // import DetailProduct from "./pages/DetailProduct";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -46,11 +47,11 @@ root.render(
         {/* //profile */}
         <Route path="/member" element={<ProfileLayout />}>
           <Route path="profile" element={<Profile />} />
+          <Route path="product" element={<ProductPainting />} />
           <Route path="order" element={<Orther />} />
           <Route path="address" element={<h1>Địa chỉ</h1>} />
           <Route path="notification" element={<h1>Thông báo</h1>} />
         </Route>
-        {/* <Routee /> */}
       </Routes>
     </Provider>
   </BrowserRouter>

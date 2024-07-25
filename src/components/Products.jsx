@@ -6,6 +6,8 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import { Link } from "react-router-dom";
+import HttpRequest from "../service/axios/Axios";
+import axios from "axios";
 
 const Products = () => {
   const [data, setData] = useState([]);
@@ -23,12 +25,14 @@ const Products = () => {
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products/");
+      const response = await HttpRequest.get("/painting/list");
+      // console.log(response.data);
       if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+        setData(await response.data);
+        setFilter(await response.data);
         setLoading(false);
       }
+      console.log(data);
 
       return () => {
         componentMounted = false;
@@ -130,7 +134,7 @@ const Products = () => {
                     {product.title.substring(0, 12)}...
                   </h5>
                   <p className="card-text">
-                    {product.description.substring(0, 90)}...
+                    {product.paintingDescription.substring(0, 90)}...
                   </p>
                 </div>
                 <ul className="list-group list-group-flush">
@@ -140,7 +144,7 @@ const Products = () => {
                 </ul>
                 <div className="card-body">
                   <Link
-                    to={"/product/" + product.id}
+                    to={"/product/" + product.paintingId}
                     className="btn btn-dark m-1"
                   >
                     Mua ngay

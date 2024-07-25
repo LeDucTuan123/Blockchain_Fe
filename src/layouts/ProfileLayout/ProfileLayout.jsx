@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar } from "../components";
+import { Navbar } from "../../components";
 import { NavLink, Outlet } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
@@ -27,6 +27,19 @@ export default function ProfileLayout() {
                 >
                   <Icon icon="ri:user-settings-line" className="mr-2" />
                   Thông tin tài khoản
+                </NavLink>
+              </li>
+              <li className="d-flex justify-content-center align-items-center">
+                <NavLink
+                  to="/member/Product"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "d-flex align-items-center px-3 py-2 text-primary font-weight-semibold w-100"
+                      : "d-flex align-items-center px-3 py-2 text-dark hover-text-primary hover-bg-light w-100"
+                  }
+                >
+                  <Icon icon="ri:user-settings-line" className="mr-2" />
+                  Quản lý sản phẩm
                 </NavLink>
               </li>
               {/* <li>

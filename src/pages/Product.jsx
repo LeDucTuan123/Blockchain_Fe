@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
 
 import { Footer, Navbar } from "../components";
+import HttpRequest from "../service/axios/Axios";
 
 const Product = () => {
   const { id } = useParams();
@@ -24,14 +25,16 @@ const Product = () => {
     const getProduct = async () => {
       setLoading(true);
       setLoading2(true);
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-      const data = await response.json();
+      const response = await HttpRequest.get(
+        `http://localhost:8000/painting/${id}`
+      );
+      const data = await response.data;
       setProduct(data);
       setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
+      const response2 = await HttpRequest.get(
+        `http://localhost:8000/painting/list`
       );
-      const data2 = await response2.json();
+      const data2 = await response2.data;
       setSimilarProducts(data2);
       setLoading2(false);
     };
@@ -76,16 +79,16 @@ const Product = () => {
               />
             </div>
             <div className="col-md-6 col-md-6 py-5">
+              <h1 className="display-5">{product.title}</h1>
               <p className="d-flex " style={{ fontSize: "20px" }}>
-                Thể loại:
+                Miêu tả:
                 <h4 className="text-uppercase text-muted pl-2">
-                  {product.category}
+                  {product.paintingDescription}
                 </h4>
               </p>
-              <h1 className="display-5">{product.title}</h1>
               <p className="lead">
-                <b>Đánh giá</b>:{product.rating && product.rating.rate}{" "}
-                <i className="fa fa-star"></i>
+                <b>Người bán</b>: {product.artist && product.artist.userName}{" "}
+                {/* <i className="fa fa-star"></i> */}
               </p>
               <h3 className="display-6  my-4">Giá: ${product.price}</h3>
               <p className="lead">{product.description}</p>
@@ -135,9 +138,9 @@ const Product = () => {
           <div className="d-flex">
             {similarProducts.map((item) => {
               return (
-                <div key={item.id} className="card mx-4 text-center">
+                <div key={item.paintingId} className="card mx-4 text-center">
                   <Link
-                    to={`/product/${item.id}`}
+                    to={`/product/${item.paintingId}`}
                     style={{ color: "#333", textDecoration: "none" }}
                   >
                     <img
@@ -158,7 +161,7 @@ const Product = () => {
                   </ul> */}
                   <div className="card-body">
                     <Link
-                      to={"/product/" + item.id}
+                      to={"/product/" + item.paintingId}
                       className="btn btn-dark m-1"
                     >
                       Mua ngay
