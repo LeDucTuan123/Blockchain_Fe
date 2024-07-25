@@ -79,7 +79,7 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons text-center py-5">
+        {/* <div className="buttons text-center py-5">
           <button
             className="btn btn-outline-dark btn-sm m-2"
             onClick={() => setFilter(data)}
@@ -110,20 +110,20 @@ const Products = () => {
           >
             Electronics
           </button>
-        </div>
+        </div> */}
 
         {filter.slice(0, countProduct).map((product) => {
           return (
             <div
-              id={product.id}
-              key={product.id}
+              id={product.paintingId}
+              key={product.paintingId}
               className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
             >
-              <div className="card text-center h-100" key={product.id}>
-                <Link to={`/product/${product.id}`}>
+              <div className="card text-center h-100" key={product.paintingId}>
+                <Link to={`/product/${product.paintingId}`}>
                   <img
                     className="card-img-top p-3 "
-                    src={product.image}
+                    src={product.imageUrl}
                     alt="Card"
                     height={300}
                   />
