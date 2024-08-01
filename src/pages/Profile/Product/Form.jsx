@@ -4,6 +4,8 @@ import { ref } from "firebase/storage";
 import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { useDropzone } from "react-dropzone";
 import { storage } from "../../../service/firebase";
+import ListProduct from "./ListProduct";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const formPainting = {
   paintingId: "",
@@ -18,6 +20,16 @@ export default function Form() {
   const [dataPainting, setDataPainting] = useState(formPainting);
   const [imageUpload, setImageUpload] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShowEdit, setIsShowEdit] = useState(false);
+  const [fetchDataProduct, setFetchDataProduct] = useState([]);
+
+  useEffect(() => {
+    HttpRequest.get("painting/list").then((res) => {
+      setFetchDataProduct(res.data);
+    });
+  }, []);
+
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles[0]) {
       setImageUpload(acceptedFiles[0]);
@@ -26,8 +38,11 @@ export default function Form() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   useEffect(() => {
-    if (dataPainting.imageUrl) {
+    if (!isShowEdit && dataPainting.imageUrl) {
       addPainting();
+    }
+    if (isShowEdit && isLoading) {
+      uploadImage();
     }
   }, [dataPainting.imageUrl]);
 
@@ -66,6 +81,43 @@ export default function Form() {
       console.error("Error: ", error);
     }
   };
+
+  const uploadImage = () => {
+    setTimeout(async () => {
+      await fetch({
+        method: "PUT",
+        url: `http://localhost:8000/painting/update/${dataPainting.paintingId}`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: JSON.stringify({
+          paintingDescription: dataPainting.paintingDescription,
+          price: dataPainting.price,
+          imageUrl: String(dataPainting.imageUrl),
+          title: dataPainting.title,
+        }),
+      });
+
+      setIsLoading(false);
+      setIsShowEdit(false);
+      alert("Update thành công");
+      // return setfetchDataBook(fetdataUpdate);
+      setFetchDataProduct((prev) =>
+        prev.map((item) =>
+          item.paintingId === dataPainting.paintingId
+            ? {
+                ...item,
+                paintingDescription: dataPainting.paintingDescription,
+                imageUrl: dataPainting.imageUrl,
+                price: dataPainting.price,
+                title: dataPainting.title,
+              }
+            : item
+        )
+      );
+    }, 2000);
+  };
+
   const handleAddPainting = async (e) => {
     e.preventDefault();
 
@@ -82,6 +134,7 @@ export default function Form() {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log("Upload is " + progress + "% done");
+        // eslint-disable-next-line default-case
         switch (snapshot.state) {
           case "paused":
             console.log("Upload is paused");
@@ -108,6 +161,67 @@ export default function Form() {
     );
   };
 
+  const getDowloadUrlImage = async (uploadTask) => {
+    try {
+      const img = await getDownloadURL(uploadTask.snapshot.ref);
+      setDataPainting({ ...dataPainting, imageUrl: String(img) });
+      console.log("File available at", dataPainting.imageUrl);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditPainting = (item) => {
+    console.log("data:", item);
+    setDataPainting((prev) => ({
+      ...prev,
+      paintingId: item.paintingId,
+      title: item.title,
+      artist: item.artist.id,
+      imageUrl: item.imageUrl,
+      paintingDescription: item.paintingDescription,
+      price: item.price,
+    }));
+    setIsShowEdit(true);
+  };
+
+  const handleUpdatePainting = (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    const urlImage = ref(storage, dataPainting.imageUrl);
+    const pathImage = ref(storage, urlImage.fullPath);
+    const uploadTask = uploadBytesResumable(pathImage, imageUpload);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Quan sát các sự kiện thay đổi trạng thái như tiến trình, tạm dừng và tiếp tục
+        // Lấy tiến độ nhiệm vụ, bao gồm số byte đã tải lên và tổng số byte cần tải lên
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        // eslint-disable-next-line default-case
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+        console.log(error);
+      },
+      async () => {
+        await getDowloadUrlImage(uploadTask);
+      }
+    );
+  };
+
   return (
     <>
       <div>
@@ -119,6 +233,7 @@ export default function Form() {
               className="form-control"
               placeholder="name"
               aria-label="name"
+              value={dataPainting.title}
               onChange={(e) =>
                 setDataPainting((prev) => ({ ...prev, title: e.target.value }))
               }
@@ -131,6 +246,7 @@ export default function Form() {
               className="form-control"
               placeholder="$100"
               aria-label="price"
+              value={dataPainting.price}
               onChange={(e) =>
                 setDataPainting((prev) => ({ ...prev, price: e.target.value }))
               }
@@ -143,6 +259,7 @@ export default function Form() {
               className="form-control"
               placeholder="..."
               aria-label="description"
+              value={dataPainting.paintingDescription}
               onChange={(e) =>
                 setDataPainting((prev) => ({
                   ...prev,
@@ -164,7 +281,7 @@ export default function Form() {
             {imageUpload || dataPainting.imageUrl ? (
               <img
                 src={
-                  dataPainting.imageUrl
+                  imageUpload || dataPainting.imageUrl
                     ? dataPainting.imageUrl
                     : URL.createObjectURL(imageUpload)
                 }
@@ -182,11 +299,35 @@ export default function Form() {
             )}
           </div>
         </div>
-        <div className="btn btn-success mt-5 mr-2" onClick={handleAddPainting}>
-          Thêm
+        {isLoading}
+        <div
+          className="btn btn-success mt-5 mr-2"
+          onClick={isShowEdit ? handleUpdatePainting : handleAddPainting}
+        >
+          {isLoading ? (
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          ) : isShowEdit ? (
+            "Sửa"
+          ) : (
+            "Tạo mới"
+          )}
         </div>
-        <div className="btn btn-primary mt-5 mr-2">Sửa</div>
+        {/* <div
+          className="btn btn-primary mt-5 mr-2"
+          onClick={handleUpdatePainting}
+        >
+          Sửa
+        </div> */}
         <div className="btn btn-danger mt-5 mr-2">Xóa</div>
+      </div>
+      <div className="pt-5">
+        <ListProduct
+          setFetchDataProduct={setFetchDataProduct}
+          fetchDataProduct={fetchDataProduct}
+          onHandleEditProduct={handleEditPainting}
+        />
       </div>
     </>
   );
