@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
+import { useDispatch, useSelector } from "react-redux";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -19,7 +18,7 @@ const Products = () => {
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
-    dispatch(addCart(product));
+    // dispatch(addCart(product));
   };
 
   useEffect(() => {
@@ -117,7 +116,7 @@ const Products = () => {
             <div
               id={product.paintingId}
               key={product.paintingId}
-              className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
+              className="col-md-3 col-sm-6 col-xs-8 col-12 mb-4"
             >
               <div className="card text-center h-100" key={product.paintingId}>
                 <Link to={`/product/${product.paintingId}`}>
@@ -163,6 +162,42 @@ const Products = () => {
       </>
     );
   };
+
+  const isLogin = useSelector((state) => state.auth.login);
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+  // useEffect(() => {
+  //   async function test() {
+  //     if (isLogin && user.id) {
+  //       // lấy dữ liệu db đổ lên cart
+  //       const res = await HttpRequest.get(`/order/cart/${user.id}`);
+  //       // console.log("card: ", res.data);
+  //       // if (res.data) {
+  //       //   let orderdetails = res.data.orderdetails;
+  //       //   let products = orderdetails.map((od) => {
+  //       //     let book = books.find((book) => {
+  //       //       return book.orderdetails?.some((item: any) => {
+  //       //         return item.id === od.id;
+  //       //       });
+  //       //     });
+  //       //     if (book) {
+  //       //       return { ...book, quantity: od.quantity, odid: od.id };
+  //       //     }
+
+  //       //   });
+  //       //   setProduct(products);
+  //       // }
+  //     } else {
+  //       // nếu không đăng nhập
+  //       // if (cartProduct) {
+  //       //   setProduct(JSON.parse(cartProduct));
+  //       // }
+  //     }
+  //   }
+  //   test();
+  // }, [user.id]);
+
   return (
     <>
       <div className="container my-3 py-3">

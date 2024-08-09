@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
-import { useSelector, useDispatch } from "react-redux";
-import { addCart, delCart } from "../redux/action";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import HttpRequest from "../service/axios/Axios";
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const EmptyCart = () => {
     return (
@@ -25,24 +25,78 @@ const Cart = () => {
     );
   };
 
-  const addItem = (product) => {
-    dispatch(addCart(product));
-  };
+  const addItem = (product) => {};
   const removeItem = (product) => {
-    dispatch(delCart(product));
+    // dispatch(delCart(product));
   };
 
-  const ShowCart = () => {
-    let subtotal = 0;
-    let shipping = 30.0;
-    let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
-    });
+  const ShowCart = ({ dataCart }) => {
+    console.log("showw: ", dataCart);
+    //   let subtotal = 0;
+    //   let shipping = 30.0;
+    //   let totalItems = 0;
+    //   state.map((item) => {
+    //     return (subtotal += item.price * item.qty);
+    //   });
 
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
+    //   state.map((item) => {
+    //     return (totalItems += item.qty);
+    //   });
+    const [productPay, setProductPay] = useState([]);
+    const [checkAll, setCheckAll] = useState(false);
+
+    // check để thêm sản phẩm vào mảng thanh toán
+    function handleCheckToPay(e, id, title) {
+      console.log(
+        "e: ",
+        e.target.checked + "---id: ",
+        id + "---title: ",
+        title
+      );
+      // setCheckAll(!checkAll);
+      let checked = e.target.checked;
+      if (checked) {
+        let p = dataCart?.find((item) => {
+          return item.paintingId === id && item.title === title;
+        });
+        console.log("p: ", p);
+        console.log("Checked:", checked);
+        console.log("Product found (p):", p);
+
+        if (checked) {
+          setProductPay((prev) => {
+            return [...prev, p];
+          });
+        } else {
+          setProductPay((prev) =>
+            prev.filter(
+              (item) => item.paintingId !== id || item.title !== title
+            )
+          );
+        }
+      }
+      // else {
+      //   setProductPay((prev) => {
+      //     return prev?.filter((item) => {
+      //       return item.title !== title;
+      //     });
+      //   });
+      // }
+    }
+
+    function handleCheckAll(e) {
+      let checked = e.target.checked;
+      if (checked) {
+        setCheckAll(checked);
+        setProductPay(dataCart);
+      } else {
+        setCheckAll(checked);
+        setProductPay([]);
+      }
+    }
+
+    console.log("product pay: ", productPay);
+
     return (
       <>
         <section className="h-100 gradient-custom">
@@ -54,75 +108,110 @@ const Cart = () => {
                     <h5 className="mb-0">Danh sách sản phẩm</h5>
                   </div>
                   <div className="card-body">
-                    {state.map((item) => {
-                      return (
-                        <div key={item.id}>
-                          <div className="row d-flex align-items-center">
-                            <div className="col-lg-3 col-md-12">
-                              <div
-                                className="bg-image rounded"
-                                data-mdb-ripple-color="light"
-                              >
-                                <img
-                                  src={item.image}
-                                  // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
-                                />
+                    <div className="d-flex  align-items-center  mb-5">
+                      <input
+                        className="h-5 w-5 mr-2"
+                        type="checkbox"
+                        checked={checkAll}
+                        onChange={(e) => handleCheckAll(e)}
+                      />
+                      <div className="col-span-5">
+                        Chọn tất cả ({dataCart && dataCart.length} sản phẩm)
+                      </div>
+                    </div>
+                    {dataCart &&
+                      dataCart.map((item) => {
+                        return (
+                          <div key={item.paintingId}>
+                            <div className="row d-flex align-items-center">
+                              <div className="col-lg-3 col-md-12">
+                                <div
+                                  className="bg-image d-flex d-flex align-items-center rounded"
+                                  data-mdb-ripple-color="light"
+                                >
+                                  <div className="d-flex  align-items-center mr-2 mb-5">
+                                    <input
+                                      className="h-5 w-5"
+                                      type="checkbox"
+                                      onChange={(e) =>
+                                        handleCheckToPay(
+                                          e,
+                                          item.paintingId,
+                                          item.title
+                                        )
+                                      }
+                                      disabled={checkAll}
+                                      checked={
+                                        productPay &&
+                                        productPay.some((i) => {
+                                          return (
+                                            item.paintingId === i.paintingId &&
+                                            item.title === i.title
+                                          );
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                  <img
+                                    src={item.imageUrl}
+                                    // className="w-100"
+                                    alt={item.title}
+                                    width={100}
+                                    height={75}
+                                  />
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="col-lg-4 col-md-6">
-                              <p>
-                                <strong>{item.title}</strong>
-                              </p>
-                              {/* <p>Color: blue</p>
+                              <div className="col-lg-4 col-md-6">
+                                <p>
+                                  <strong>{item.title}</strong>
+                                </p>
+                                {/* <p>Color: blue</p>
                               <p>Size: M</p> */}
-                            </div>
+                              </div>
 
-                            <div className="col-lg-3 col-md-6">
-                              <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
-                              >
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    removeItem(item);
-                                  }}
+                              <div className="col-lg-3 col-md-6">
+                                <div
+                                  className="d-flex mb-4"
+                                  style={{ maxWidth: "300px" }}
                                 >
-                                  <i className="fas fa-minus"></i>
-                                </button>
+                                  <button
+                                    className="btn px-3"
+                                    onClick={() => {
+                                      removeItem(item);
+                                    }}
+                                  >
+                                    <i className="fas fa-minus"></i>
+                                  </button>
 
-                                <p className="mx-5">{item.qty}</p>
+                                  <p className="mx-5">{item.quantity}</p>
 
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    addItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-plus"></i>
-                                </button>
+                                  <button
+                                    className="btn px-3"
+                                    onClick={() => {
+                                      addItem(item);
+                                    }}
+                                  >
+                                    <i className="fas fa-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="col-lg-2">
+                                <p className="text-start text-md-center">
+                                  <strong>
+                                    <span className="text-muted">
+                                      {item.price}
+                                    </span>{" "}
+                                    {/* x ${item.price} */}
+                                  </strong>
+                                </p>
                               </div>
                             </div>
-                            <div className="col-lg-2">
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  <span className="text-muted">
-                                    {item.qty * item.price}
-                                  </span>{" "}
-                                  {/* x ${item.price} */}
-                                </strong>
-                              </p>
-                            </div>
-                          </div>
 
-                          <hr className="my-4" />
-                        </div>
-                      );
-                    })}
+                            <hr className="my-4" />
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               </div>
@@ -134,19 +223,28 @@ const Cart = () => {
                   <div className="card-body">
                     <ul className="list-group list-group-flush">
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Sản phẩm ({totalItems})
-                        <span>${Math.round(subtotal)}</span>
+                        Sản phẩm
+                        <span>$</span>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                         Tiền vận chuyển
-                        <span>${shipping}</span>
+                        <span>$</span>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                         <div>
                           <strong>Tổng tiền</strong>
                         </div>
+                        <div>
+                          <strong>
+                            {productPay &&
+                              productPay.length > 0 &&
+                              productPay.reduce((total, item) => {
+                                return total + Number(item.price);
+                              }, 0)}
+                          </strong>
+                        </div>
                         <span>
-                          <strong>${Math.round(subtotal + shipping)}</strong>
+                          <strong>$</strong>
                         </span>
                       </li>
                     </ul>
@@ -167,13 +265,73 @@ const Cart = () => {
     );
   };
 
+  const [dataCart, setDataCart] = useState([]);
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+  const [paintings, setPaintings] = useState([]);
+
+  useEffect(() => {
+    const fetch = () => {
+      HttpRequest.get("/painting/list").then((res) => {
+        setPaintings(res.data);
+      });
+    };
+    fetch();
+  }, []);
+  console.log(paintings);
+
+  useEffect(() => {
+    const fetchDataCart = async () => {
+      if (!paintings.length || !user) return; // Check if paintings and user have data
+
+      try {
+        const res = await HttpRequest.get(`/order/cart/${user.id}`);
+        console.log("API Response: ", res.data); // Check the response data
+
+        if (res.data) {
+          let orderdetails =
+            res.data.flatMap((item) => item.orderdetails) || []; // Ensure orderdetails is an array
+          console.log("orderdetails: ", orderdetails);
+
+          let products = orderdetails
+            .map((od) => {
+              let painting = paintings.find(
+                (p) => p.paintingId === od.paintingid
+              ); // Match paintingId with paintingid in orderdetails
+              console.log("Painting found: ", painting);
+
+              if (painting) {
+                return {
+                  ...painting,
+                  quantity: od.quantity,
+                  odid: od.id,
+                  odpt: od.paintingid,
+                };
+              }
+              return null;
+            })
+            .filter((item) => item !== null); // Filter out null values
+
+          console.log("Products: ", products);
+          setDataCart(products);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data cart:", error);
+      }
+    };
+
+    fetchDataCart();
+  }, [paintings, user?.id]); // Ensure fetchDataCart only runs when paintings and user have data
+
+  console.log("data cart: ", dataCart);
   return (
     <>
       <Navbar />
       <div className="container my-3 py-3">
         <h1 className="text-center">Giỏ hàng</h1>
         <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        {dataCart.length > 0 ? <ShowCart dataCart={dataCart} /> : <EmptyCart />}
       </div>
       <Footer />
     </>

@@ -50,7 +50,7 @@ export default function Form() {
     try {
       const payload = {
         title: dataPainting.title,
-        artist: { id: 3 },
+        user: { id: 3 },
         price: dataPainting.price,
         paintingDescription: dataPainting.paintingDescription,
         imageUrl: String(dataPainting.imageUrl),

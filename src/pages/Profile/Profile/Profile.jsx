@@ -25,7 +25,7 @@ export default function Profile() {
           </div>
 
           <div className="col-md-6 py-3">
-            <label className="mr-3 w-25 font-medium">Số điện thoại:</label>
+            <label className="mr-3 w-100 font-medium">Số điện thoại:</label>
             <input
               disabled
               className="form-control w-75 d-inline-block"

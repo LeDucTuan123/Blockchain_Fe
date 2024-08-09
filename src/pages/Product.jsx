@@ -3,7 +3,6 @@ import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import { useDispatch } from "react-redux";
-import { addCart } from "../redux/action";
 
 import { Footer, Navbar } from "../components";
 import HttpRequest from "../service/axios/Axios";
@@ -11,15 +10,28 @@ import HttpRequest from "../service/axios/Axios";
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState([]);
+  const [data, setData] = useState([]);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
 
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
-    dispatch(addCart(product));
+    // dispatch(addCart(product));
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await HttpRequest.get("/painting/list");
+      setData(res.data);
+      console.log("data: ", res.data);
+    };
+    fetch();
+  }, []);
 
   useEffect(() => {
     const getProduct = async () => {
@@ -40,6 +52,35 @@ const Product = () => {
     };
     getProduct();
   }, [id]);
+  console.log(product);
+
+  async function addProductToDB() {
+    try {
+      const response = await HttpRequest.post("/order/create", {
+        orderdate: new Date(),
+        totalamount: null,
+        user: { id: user.id },
+        statuss: { id: 1 },
+        orderdetails: [
+          {
+            price: product.price,
+            quantity: 1,
+            painting: { paintingId: id },
+          },
+        ],
+      });
+
+      console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
+
+      if (response.status === 200) {
+        console.log("Product added successfully");
+      } else {
+        console.error("Failed to add product:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+  }
 
   const Loading = () => {
     return (
@@ -72,7 +113,7 @@ const Product = () => {
             <div className="col-md-6 col-sm-12 py-3">
               <img
                 className="img-fluid"
-                src={product.image}
+                src={product.imageUrl}
                 alt={product.title}
                 width="350px"
                 height="350px"
@@ -87,15 +128,13 @@ const Product = () => {
                 </h4>
               </p>
               <p className="lead">
-                <b>Người bán</b>: {product.artist && product.artist.userName}{" "}
+                <b>Người bán</b>: @
+                {product.user && product.user.firstname + product.user.lastname}{" "}
                 {/* <i className="fa fa-star"></i> */}
               </p>
               <h3 className="display-6  my-4">Giá: ${product.price}</h3>
               <p className="lead">{product.description}</p>
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => addProduct(product)}
-              >
+              <button className="btn btn-outline-dark" onClick={addProductToDB}>
                 Thêm vào giỏ hàng
               </button>
               <Link to="/cart" className="btn btn-dark mx-3">
@@ -181,6 +220,7 @@ const Product = () => {
       </>
     );
   };
+
   return (
     <>
       <Navbar />
