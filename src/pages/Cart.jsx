@@ -30,7 +30,7 @@ const Cart = () => {
     // dispatch(delCart(product));
   };
 
-  const ShowCart = ({ dataCart }) => {
+  const ShowCart = ({ dataCart, setDataCart }) => {
     console.log("showw: ", dataCart);
     //   let subtotal = 0;
     //   let shipping = 30.0;
@@ -97,6 +97,18 @@ const Cart = () => {
 
     console.log("product pay: ", productPay);
 
+    const handleDeleteCart = (id) => {
+      try {
+        HttpRequest.delete(`/orderitem/deletee/${id}`).then((res) => {
+          setDataCart((prev) => prev.filter((item) => item.paintingId !== id));
+        });
+      } catch (error) {
+        console.log("error: ", error);
+      }
+
+      // return res.data;
+    };
+
     return (
       <>
         <section className="h-100 gradient-custom">
@@ -122,9 +134,12 @@ const Cart = () => {
                     {dataCart &&
                       dataCart.map((item) => {
                         return (
-                          <div key={item.paintingId}>
-                            <div className="row d-flex align-items-center">
-                              <div className="col-lg-3 col-md-12">
+                          <div
+                            className="d-flex justify-content-between"
+                            key={item.paintingId}
+                          >
+                            <div className="col-md-12 row d-flex align-items-center">
+                              <div className="col-lg-3 ">
                                 <div
                                   className="bg-image d-flex d-flex align-items-center rounded"
                                   data-mdb-ripple-color="light"
@@ -170,7 +185,7 @@ const Cart = () => {
                               <p>Size: M</p> */}
                               </div>
 
-                              <div className="col-lg-3 col-md-6">
+                              {/* <div className="col-lg-3 col-md-6">
                                 <div
                                   className="d-flex mb-4"
                                   style={{ maxWidth: "300px" }}
@@ -195,7 +210,7 @@ const Cart = () => {
                                     <i className="fas fa-plus"></i>
                                   </button>
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-lg-2">
                                 <p className="text-start text-md-center">
                                   <strong>
@@ -206,9 +221,22 @@ const Cart = () => {
                                   </strong>
                                 </p>
                               </div>
+                              <div className="col-lg-2 ">
+                                <p className="text-start text-md-center">
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteCart(item.paintingId)
+                                    }
+                                    className="btn btn-danger"
+                                    disabled={checkAll && true}
+                                  >
+                                    Xóa
+                                  </button>
+                                </p>
+                              </div>
                             </div>
 
-                            <hr className="my-4" />
+                            {/* <hr className="my-4" /> */}
                           </div>
                         );
                       })}
@@ -331,7 +359,11 @@ const Cart = () => {
       <div className="container my-3 py-3">
         <h1 className="text-center">Giỏ hàng</h1>
         <hr />
-        {dataCart.length > 0 ? <ShowCart dataCart={dataCart} /> : <EmptyCart />}
+        {dataCart.length > 0 ? (
+          <ShowCart dataCart={dataCart} setDataCart={setDataCart} />
+        ) : (
+          <EmptyCart />
+        )}
       </div>
       <Footer />
     </>
