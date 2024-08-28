@@ -3,6 +3,8 @@ import { Footer, Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import HttpRequest from "../service/axios/Axios";
+import { useAppDispatch } from "../redux/store";
+import { setCountCart } from "../redux/slices/commonSlice";
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
@@ -25,11 +27,6 @@ const Cart = () => {
     );
   };
 
-  const addItem = (product) => {};
-  const removeItem = (product) => {
-    // dispatch(delCart(product));
-  };
-
   const ShowCart = ({ dataCart, setDataCart }) => {
     console.log("showw: ", dataCart);
     //   let subtotal = 0;
@@ -42,7 +39,7 @@ const Cart = () => {
     //   state.map((item) => {
     //     return (totalItems += item.qty);
     //   });
-    const [productPay, setProductPay] = useState([]);
+    const [productPay, setProductPay] = useState();
     const [checkAll, setCheckAll] = useState(false);
 
     // check để thêm sản phẩm vào mảng thanh toán
@@ -64,9 +61,7 @@ const Cart = () => {
         console.log("Product found (p):", p);
 
         if (checked) {
-          setProductPay((prev) => {
-            return [...prev, p];
-          });
+          setProductPay(p);
         } else {
           setProductPay((prev) =>
             prev.filter(
@@ -96,17 +91,47 @@ const Cart = () => {
     }
 
     console.log("product pay: ", productPay);
+    // localStorage.removeItem("productPay");
+    localStorage.setItem("productPay", JSON.stringify(productPay));
 
-    const handleDeleteCart = (id) => {
+    // const handleDeleteCart = (id) => {
+    //   try {
+    //     HttpRequest.delete(`/orderitem/deletee/${id}`).then((res) => {
+    //       setDataCart((prev) => prev.filter((item) => item.paintingId !== id));
+    //     });
+    //   } catch (error) {
+    //     console.log("error: ", error);
+    //   }
+
+    //   // return res.data;
+    // };
+
+    const handleDeleteCart = async (orderitems) => {
       try {
-        HttpRequest.delete(`/orderitem/deletee/${id}`).then((res) => {
-          setDataCart((prev) => prev.filter((item) => item.paintingId !== id));
-        });
-      } catch (error) {
-        console.log("error: ", error);
-      }
+        // Lấy danh sách order item từ API
+        let res = await HttpRequest.get("orderitem/list");
+        let orderits = res.data;
 
-      // return res.data;
+        // Tìm kiếm và trả về ID đầu tiên khớp với điều kiện
+        let foundOrder = orderitems.find((or) => {
+          return orderits.some((item) =>
+            dataCart.some(
+              (dataid) =>
+                item.id === or.id && dataid.paintingId === or.paintingid
+            )
+          );
+        });
+
+        if (foundOrder) {
+          HttpRequest.delete(`/orderitem/delete/${foundOrder.id}`).then((res) =>
+            setDataCart((prev) =>
+              prev.filter((item) => item.paintingId !== foundOrder.id)
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching order items:", error);
+      }
     };
 
     return (
@@ -156,15 +181,17 @@ const Cart = () => {
                                         )
                                       }
                                       disabled={checkAll}
-                                      checked={
-                                        productPay &&
-                                        productPay.some((i) => {
-                                          return (
-                                            item.paintingId === i.paintingId &&
-                                            item.title === i.title
-                                          );
-                                        })
-                                      }
+                                      // checked={
+                                      //   productPay &&
+                                      //   // productPay.some((i) => {
+                                      //   //   return (
+                                      //   //     item.paintingId === i.paintingId &&
+                                      //   //     item.title === i.title
+                                      //   //   );
+
+                                      //   // })
+                                      //   true
+                                      // }
                                     />
                                   </div>
                                   <img
@@ -225,7 +252,7 @@ const Cart = () => {
                                 <p className="text-start text-md-center">
                                   <button
                                     onClick={() =>
-                                      handleDeleteCart(item.paintingId)
+                                      handleDeleteCart(item.orderdetails)
                                     }
                                     className="btn btn-danger"
                                     disabled={checkAll && true}
@@ -281,7 +308,7 @@ const Cart = () => {
                       to="/checkout"
                       className="btn btn-dark btn-lg btn-block"
                     >
-                      Go to checkout
+                      Thanh toán
                     </Link>
                   </div>
                 </div>
@@ -292,6 +319,7 @@ const Cart = () => {
       </>
     );
   };
+  const dispatch = useAppDispatch();
 
   const [dataCart, setDataCart] = useState([]);
   const user = localStorage.getItem("user")
@@ -341,8 +369,9 @@ const Cart = () => {
             })
             .filter((item) => item !== null); // Filter out null values
 
-          console.log("Products: ", products);
+          // console.log("Products: ", products);
           setDataCart(products);
+          dispatch(setCountCart(dataCart.length));
         }
       } catch (error) {
         console.error("Failed to fetch data cart:", error);
@@ -350,7 +379,7 @@ const Cart = () => {
     };
 
     fetchDataCart();
-  }, [paintings, user?.id]); // Ensure fetchDataCart only runs when paintings and user have data
+  }, [dataCart.length, dispatch, paintings, user.id]); // Ensure fetchDataCart only runs when paintings and user have data
 
   console.log("data cart: ", dataCart);
   return (

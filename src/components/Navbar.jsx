@@ -3,22 +3,34 @@ import { Link, NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../redux/store";
 import { setIsLogin } from "../redux/slices/authSlice";
+import { setCountCart } from "../redux/slices/commonSlice";
+import HttpRequest from "../service/axios/Axios";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
   const islogin = useSelector((state) => state.auth?.isLogin);
-
-  console.log("is login: ", islogin);
+  const countCart = useSelector((state) => state.common?.countCart);
+  console.log("count cart: ", countCart);
 
   const [auth, setAuth] = useState();
 
+  const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+
+  const userData = localStorage.getItem("user");
+  console.log("isPhantomInstalled: ", isPhantomInstalled);
+  if (userData) {
+    if (!isPhantomInstalled) {
+      alert("Hãy cài ví Phantom để có trải nghiệm tốt nhất");
+      window.open("https://phantom.app/", "_blank");
+    }
+  }
+
   useEffect(() => {
-    const userData = localStorage.getItem("user");
     if (userData) {
       setAuth(JSON.parse(userData)); //
       dispatch(setIsLogin(true));
     }
-  }, [islogin]);
+  }, [countCart, islogin]);
 
   const handleLogout = () => {
     dispatch(setIsLogin(false));
@@ -81,8 +93,28 @@ const Navbar = () => {
             />
           </div>
           <div className="buttons d-flex text-center">
-            <NavLink to="/cart" className="btn btn-outline-dark m-2">
-              <i className="fa fa-cart-shopping mr-1"></i> Cart{" "}
+            <NavLink
+              to="/cart"
+              className="btn btn-outline-dark m-2 position-relative"
+            >
+              <i className="fa fa-cart-shopping mr-1"></i>
+              <div
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  backgroundColor: "yellow",
+                  right: "5px",
+                  borderRadius: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                className="position-absolute top-0  "
+              >
+                <span style={{ fontSize: "12px", color: "#ec8686" }}>
+                  {countCart}
+                </span>
+              </div>
             </NavLink>
             {auth && islogin ? (
               <>

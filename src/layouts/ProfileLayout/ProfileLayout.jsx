@@ -74,6 +74,22 @@ export default function ProfileLayout() {
               </li>
               <li>
                 <NavLink
+                  to="/member/mywallet"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "d-flex align-items-center px-3 py-2 text-primary font-weight-semibold w-100"
+                      : "d-flex align-items-center px-3 py-2 text-dark hover-text-primary hover-bg-light w-100"
+                  }
+                >
+                  <Icon
+                    icon="icon-park-outline:transaction-order"
+                    className="mr-2"
+                  />
+                  Ví của tôi
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/member/notification"
                   className={({ isActive }) =>
                     isActive

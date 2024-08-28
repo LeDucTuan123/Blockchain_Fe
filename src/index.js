@@ -25,6 +25,7 @@ import { Profile } from "./pages/Profile/Profile";
 import { Orther } from "./pages/Profile/Orther";
 import { ProductPainting } from "./pages/Profile/Product";
 import { store } from "./redux/store";
+import Wallet from "./pages/Profile/MyWallet/Wallet";
 // import DetailProduct from "./pages/DetailProduct";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -53,6 +54,7 @@ root.render(
           <Route path="order" element={<Orther />} />
           <Route path="address" element={<h1>Địa chỉ</h1>} />
           <Route path="notification" element={<h1>Thông báo</h1>} />
+          <Route path="mywallet" element={<Wallet />} />
         </Route>
       </Routes>
     </Provider>
