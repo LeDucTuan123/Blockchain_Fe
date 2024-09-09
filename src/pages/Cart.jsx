@@ -29,18 +29,8 @@ const Cart = () => {
 
   const ShowCart = ({ dataCart, setDataCart }) => {
     console.log("showw: ", dataCart);
-    //   let subtotal = 0;
-    //   let shipping = 30.0;
-    //   let totalItems = 0;
-    //   state.map((item) => {
-    //     return (subtotal += item.price * item.qty);
-    //   });
 
-    //   state.map((item) => {
-    //     return (totalItems += item.qty);
-    //   });
     const [productPay, setProductPay] = useState();
-    const [checkAll, setCheckAll] = useState(false);
 
     // check để thêm sản phẩm vào mảng thanh toán
     function handleCheckToPay(e, id, title) {
@@ -79,32 +69,20 @@ const Cart = () => {
       // }
     }
 
-    function handleCheckAll(e) {
-      let checked = e.target.checked;
-      if (checked) {
-        setCheckAll(checked);
-        setProductPay(dataCart);
-      } else {
-        setCheckAll(checked);
-        setProductPay([]);
-      }
-    }
+    // function handleCheckAll(e) {
+    //   let checked = e.target.checked;
+    //   if (checked) {
+    //     setCheckAll(checked);
+    //     setProductPay(dataCart);
+    //   } else {
+    //     setCheckAll(checked);
+    //     setProductPay([]);
+    //   }
+    // }
 
     console.log("product pay: ", productPay);
     // localStorage.removeItem("productPay");
     localStorage.setItem("productPay", JSON.stringify(productPay));
-
-    // const handleDeleteCart = (id) => {
-    //   try {
-    //     HttpRequest.delete(`/orderitem/deletee/${id}`).then((res) => {
-    //       setDataCart((prev) => prev.filter((item) => item.paintingId !== id));
-    //     });
-    //   } catch (error) {
-    //     console.log("error: ", error);
-    //   }
-
-    //   // return res.data;
-    // };
 
     const handleDeleteCart = async (orderitems) => {
       try {
@@ -146,14 +124,14 @@ const Cart = () => {
                   </div>
                   <div className="card-body">
                     <div className="d-flex  align-items-center  mb-5">
-                      <input
+                      {/* <input
                         className="h-5 w-5 mr-2"
                         type="checkbox"
                         checked={checkAll}
                         onChange={(e) => handleCheckAll(e)}
-                      />
+                      /> */}
                       <div className="col-span-5">
-                        Chọn tất cả ({dataCart && dataCart.length} sản phẩm)
+                        Có {dataCart && dataCart.length} sản phẩm trong giỏ hàng
                       </div>
                     </div>
                     {dataCart &&
@@ -180,7 +158,6 @@ const Cart = () => {
                                           item.title
                                         )
                                       }
-                                      disabled={checkAll}
                                       // checked={
                                       //   productPay &&
                                       //   // productPay.some((i) => {
@@ -255,7 +232,6 @@ const Cart = () => {
                                       handleDeleteCart(item.orderdetails)
                                     }
                                     className="btn btn-danger"
-                                    disabled={checkAll && true}
                                   >
                                     Xóa
                                   </button>

@@ -141,7 +141,7 @@ const Products = () => {
                   {/* <li className="list-group-item">Dapibus ac facilisis in</li>
                     <li className="list-group-item">Vestibulum at eros</li> */}
                 </ul>
-                <div className="card-body">
+                {/* <div className="card-body">
                   <Link
                     to={"/product/" + product.paintingId}
                     className="btn btn-dark m-1"
@@ -154,7 +154,7 @@ const Products = () => {
                   >
                     Thêm vào giỏ hàng
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           );

@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import HttpRequest from "../../../service/axios/Axios";
 
 export default function TableOrther() {
+  const [dataOrder, setDataOrder] = useState();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    const FetchData = async () => {
+      const res = await HttpRequest.get(`/order/ordersuccess/${user.id}`);
+      setDataOrder(res.data);
+    };
+    FetchData();
+  }, [user.id]);
+  console.log("first: ", dataOrder);
   return (
     <div className=" w-100 rounded-lg">
       <h1 className="text-uppercase text-lg font-bold">Đơn hàng của tôi</h1>
@@ -11,7 +23,7 @@ export default function TableOrther() {
         <button className={`btn btn-success font-weight-bold`}>
           Đã thanh toán
         </button>
-        <button className={`btn btn-primary  font-weight-bold`}>
+        {/* <button className={`btn btn-primary  font-weight-bold`}>
           Chưa thanh toán
         </button>
         <button className={`btn btn-warning  font-weight-bold`}>
@@ -22,7 +34,7 @@ export default function TableOrther() {
            font-weight-bold`}
         >
           Đã hủy
-        </button>
+        </button> */}
       </div>
       <hr className="my-4" />
       <div className="table-responsive shadow-sm rounded-lg">
@@ -39,20 +51,35 @@ export default function TableOrther() {
           </thead>
           <>
             <tbody>
-              <tr>
-                <td>Code2193812</td>
-                <td>02/07/2024</td>
-                <td>Lee DDucws Tuanas</td>
-                <td>999.999</td>
-                <td className="text-center">
-                  <span className={`badge badge-success`}>Đã thanh toán</span>
-                </td>
-                <td className="text-center">
-                  <button className="btn btn-link text-danger">
-                    Xem chi tiết
-                  </button>
-                </td>
-              </tr>
+              {dataOrder &&
+                // eslint-disable-next-line array-callback-return
+                dataOrder.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.codeorder}</td>
+                    {new Date(item.orderdate).getFullYear() +
+                      "-" +
+                      (new Date(item.orderdate).getMonth() + 1)
+                        .toString()
+                        .padStart(2, "0") +
+                      "-" +
+                      new Date(item.orderdate)
+                        .getDate()
+                        .toString()
+                        .padStart(2, "0")}
+                    <td>{item.receiver}</td>
+                    <td>{item.totalamount}</td>
+                    <td className="text-center">
+                      <span className={`badge badge-success`}>
+                        Đã thanh toán
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <button className="btn btn-link text-danger">
+                        Xem chi tiết
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </>
         </table>

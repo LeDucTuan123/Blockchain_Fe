@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Footer, Navbar } from "../components";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { faker } from "@faker-js/faker";
+// import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import {
   PublicKey,
   Connection,
@@ -10,12 +11,10 @@ import {
   SystemProgram,
   Transaction,
   clusterApiUrl,
-  sendAndConfirmTransaction,
-  SYSTEM_INSTRUCTION_LAYOUTS,
-  Message,
 } from "@solana/web3.js";
 import bs58 from "bs58";
 import { Buffer } from "buffer";
+import HttpRequest from "../service/axios/Axios";
 Buffer.from("anything", "base64");
 
 if (typeof window !== "undefined") {
@@ -23,9 +22,8 @@ if (typeof window !== "undefined") {
 }
 
 const Checkout = () => {
-  const [address, setAddress] = useState("");
   const productPay = JSON.parse(localStorage.getItem("productPay"));
-
+  const navigate = useNavigate();
   console.log("productPay: ", productPay);
 
   var provider;
@@ -54,140 +52,32 @@ const Checkout = () => {
     );
   };
 
-  // const newAccount = Keypair.generate();
-
-  // // Lấy khóa bí mật (private key) của tài khoản và mã hóa nó bằng base58
-  // const secretKey = bs58.encode(newAccount.secretKey);
-  // console.log("Base58 Encoded Secret Key:", secretKey);
   const ShowCheckout = () => {
-    // async function handleSend(wallet) {
-    //   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    //   const newKeypair = Keypair.generate();
-    //   // console.log("newKeypair: ", bs58.encode(newKeypair.secretKey));
-    //   console.log(newKeypair.publicKey);
-    //   try {
-    //     provider = getProvider();
-    //     if (!provider) {
-    //       alert("Phantom wallet is not connected.");
-    //       return;
-    //     }
+    // JCujWVsP2XHR5uQ7LG2HiRbhNskUs1vbd7Tgxnhf9CnozkmEf3m7f5KgU9T2qgrkeTTRSVTngbv3nkNgHjPftjQ
+    const [address, setAddress] = useState("");
 
-    //     // eslint-disable-next-line no-undef
-    //     // const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    //     const fromKeypair = Keypair.fromSecretKey(
-    //       bs58.decode(
-    //         "28kshbRRqMSQgz59fHWv8RFMkyc1KWSEsnUWnbUX2C5vSf6iZSp2VVUr7a1qWuxUxHrczsG69qErU42nNRLQj331"
-    //       )
-    //     );
-    //     console.log("wallet: ", wallet);
-    //     const toKeypair = new PublicKey(wallet);
-    //     console.log("toKeypair: ", toKeypair.toString());
-
-    //     const lamportsToSend = 1000000000000;
-
-    //     // const connection = new Connection(
-    //     //   "https://api.devnet.solana.com",
-    //     //   "confirmed"
-    //     // );
-
-    //     ////
-    //     const transferTransaction = new Transaction().add(
-    //       SystemProgram.transfer({
-    //         fromPubkey: fromKeypair.publicKey,
-    //         toPubkey: newKeypair.publicKey,
-    //         lamports: lamportsToSend,
-    //       })
-    //     );
-
-    //     let blockhash = (await connection.getLatestBlockhash("confirmed"))
-    //       .blockhash;
-    //     transferTransaction.recentBlockhash = blockhash;
-    //     transferTransaction.feePayer = fromKeypair.publicKey;
-
-    //     const signedTransaction = await provider.signTransaction(
-    //       transferTransaction
-    //     );
-    //     const signature = await connection.sendRawTransaction(
-    //       signedTransaction.serialize()
-    //     );
-    //     const status = await connection.getSignatureStatus(signature);
-
-    //     if (status.err) {
-    //       console.error("Transaction failed:", status.err);
-    //       alert("Transaction failed: " + status.err);
-    //     } else {
-    //       alert("Transaction successful!");
-    //     }
-
-    //     ///
-
-    //     // const transferTransaction = new Transaction().add(
-    //     //   SystemProgram.transfer({
-    //     //     fromPubkey: fromKeypair.publicKey,
-    //     //     toPubkey: "Hs3z7zNBqqmxF8gnVqLYa2Z3x4h1DSCVAacCGLYKfVnu",
-    //     //     lamports: lamportsToSend,
-    //     //   })
-    //     // );
-
-    //     // console.log("first");
-    //     // let blockhash = (await connection.getLatestBlockhash("finalized"))
-    //     //   .blockhash;
-    //     // transferTransaction.recentBlockhash = blockhash;
-    //     // transferTransaction.feePayer = fromKeypair.publicKey;
-    //     // const signedTransaction = await provider.signTransaction(
-    //     //   transferTransaction
-    //     // );
-    //     // const signature = await connection.sendRawTransaction(
-    //     //   signedTransaction.serialize()
-    //     // );
-    //     // // await connection.confirmTransaction(signature);
-    //     // const status = await connection.getSignatureStatus(signature);
-    //     // if (status.err) {
-    //     //   console.error("Transaction failed:", status.err);
-    //     //   alert("Transaction failed: " + status.err);
-    //     // } else {
-    //     //   alert("Transaction successful!");
-    //     // }
-    //     console.log("last");
-    //     // const signedTransaction = await provider.signTransaction(
-    //     //   transferTransaction
-    //     // );
-    //     // const signature = await connection.sendRawTransaction(
-    //     //   signedTransaction.serialize()
-    //     // );
-    //     // await connection.confirmTransaction(signature);
-    //     // alert("Giao dịch đã thành công!");
-    //     alert("Send sols successfully");
-    //     return true;
-    //   } catch (error) {
-    //     console.log("chi tiet loi: ", error);
-    //     alert("Send SOLs failed: " + error.message);
-    //     alert("send sols failed");
-    //     return false;
-    //   }
-    // }
-    const [status, setStatus] = useState("");
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    async function handleSend(wallet) {
+    async function handleSend(wallet, sols) {
       provider = getProvider();
-      const fromkeypair = Keypair.fromSecretKey(
-        bs58.decode(
-          "28kshbRRqMSQgz59fHWv8RFMkyc1KWSEsnUWnbUX2C5vSf6iZSp2VVUr7a1qWuxUxHrczsG69qErU42nNRLQj331"
-        )
-      );
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
       const transaction = new Transaction().add(
         SystemProgram.transfer({
-          fromPubkey: fromkeypair.publicKey,
+          fromPubkey: Keypair.fromSecretKey(
+            bs58.decode(
+              "JCujWVsP2XHR5uQ7LG2HiRbhNskUs1vbd7Tgxnhf9CnozkmEf3m7f5KgU9T2qgrkeTTRSVTngbv3nkNgHjPftjQ"
+            )
+          ).publicKey,
           toPubkey: wallet,
-          lamports: 10000,
+          lamports: sols * LAMPORTS_PER_SOL,
         })
       );
       let blockhash = (await connection.getLatestBlockhash("finalized"))
         .blockhash;
       transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromkeypair.publicKey;
+      transaction.feePayer = Keypair.fromSecretKey(
+        bs58.decode(
+          "JCujWVsP2XHR5uQ7LG2HiRbhNskUs1vbd7Tgxnhf9CnozkmEf3m7f5KgU9T2qgrkeTTRSVTngbv3nkNgHjPftjQ"
+        )
+      ).publicKey;
       try {
         const { signature } = await provider.signAndSendTransaction(
           transaction
@@ -200,7 +90,55 @@ const Checkout = () => {
         return false;
       }
     }
-    console.log("LAMPORTS_PER_SOL: ", status);
+    console.log(`BLC${faker.string.uuid().slice(0, 7)}`);
+
+    console.log("date: ", new Date());
+
+    const handlePaymentSendSold = async (wallet, sols, id) => {
+      if (address.length === 0) {
+        alert("Vui long nhap dia chi nhan hang");
+        return;
+      }
+      if (await handleSend(wallet, sols)) {
+        HttpRequest({
+          method: "POST",
+          url: "http://localhost:8000/order/payment",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: {
+            orderdate: new Date(),
+            codeorder: `Blc${faker.string.uuid().slice(0, 7)}`,
+            totalamount: sols,
+            receiver: "le duc tuan",
+            user: { id: 1 },
+            statuss: { id: 2 },
+            address: address,
+            orderdetails: [
+              {
+                quantity: 1,
+                price: sols,
+                painting: {
+                  paintingId: id,
+                },
+              },
+            ],
+          },
+        })
+          .then(() => {
+            alert("Thanh toan thanh cong");
+            navigate("/payment/success");
+          })
+          .catch((error) => {
+            console.error("Error adding painting: ", error);
+            alert("Thanh toan that bai");
+          });
+      }
+    };
+
+    const handleOnchange = (e) => {
+      setAddress(e.target.value);
+    };
 
     return (
       <>
@@ -238,7 +176,6 @@ const Checkout = () => {
                   <h4 className="mb-0">Nhập thông tin</h4>
                 </div>
                 <div className="card-body">
-                  {/* <form className="needs-validation"> */}
                   <div className="row g-3">
                     <div className="col-12 my-1">
                       <label for="address" className="form-label">
@@ -250,7 +187,8 @@ const Checkout = () => {
                         id="address"
                         placeholder="1234 Main St"
                         required
-                        onChange={(e) => setAddress(e.target.value)}
+                        value={address}
+                        onChange={(e) => handleOnchange(e)}
                       />
                       {/* <div className="invalid-feedback">
                           Please enter your shipping address.
@@ -269,7 +207,11 @@ const Checkout = () => {
                           <img
                             src={`${productPay.imageUrl}`}
                             alt="img"
-                            style={{ width: "20px", objectFit: "cover" }}
+                            style={{
+                              width: "100px",
+                              height: "100px",
+                              objectFit: "cover",
+                            }}
                           />{" "}
                         </div>
                         <div className="col-md-4">
@@ -284,11 +226,16 @@ const Checkout = () => {
 
                   <button
                     className="w-100 btn btn-primary "
-                    onClick={() => handleSend(productPay.user.wallet)}
+                    onClick={() =>
+                      handlePaymentSendSold(
+                        productPay.user.wallet,
+                        productPay.price,
+                        productPay.paintingId
+                      )
+                    }
                   >
                     Thanh toán
                   </button>
-                  {/* </form> */}
                 </div>
               </div>
             </div>

@@ -134,10 +134,14 @@ const Product = () => {
               </p>
               <h3 className="display-6  my-4">Giá: ${product.price}</h3>
               <p className="lead">{product.description}</p>
-              <button className="btn btn-outline-dark" onClick={addProductToDB}>
+              <button
+                className="btn btn-outline-dark"
+                onClick={addProductToDB}
+                disabled={product.paintingId === user.id ? true : false}
+              >
                 Thêm vào giỏ hàng
               </button>
-              <Link to="/cart" className="btn btn-dark mx-3">
+              <Link to="/cart" className="btn btn-dark  mx-3">
                 Đến giỏ hàng
               </Link>
             </div>

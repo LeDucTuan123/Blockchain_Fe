@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@faker-js/faker": "^9.0.0",
     "@iconify/react": "^5.0.1",
     "@reduxjs/toolkit": "^1.9.7",
     "@solana/web3.js": "^1.87.1",
