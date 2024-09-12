@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../redux/store";
-import { setIsLogin } from "../redux/slices/authSlice";
-import { setCountCart } from "../redux/slices/commonSlice";
+import { setIsLogin, setUser } from "../redux/slices/authSlice";
+import { setCountCart, setSearchTextValue } from "../redux/slices/commonSlice";
 import HttpRequest from "../service/axios/Axios";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
-  const islogin = useSelector((state) => state.auth?.isLogin);
-  const countCart = useSelector((state) => state.common?.countCart);
-  console.log("count cart: ", countCart);
 
+  const [searchValue, setSearchValue] = useState();
+  const [loading, setLoading] = useState(false);
   const [auth, setAuth] = useState();
 
-  const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+  const navigate = useNavigate();
+  const islogin = useSelector((state) => state.auth?.isLogin);
+  const countCart = useSelector((state) => state.common?.countCart);
+  const searchTextValue = useSelector((state) => state.common?.searchTextValue);
+  const user = useSelector((state) => state.auth?.user);
 
+  const isPhantomInstalled = window.phantom?.solana?.isPhantom;
   const userData = localStorage.getItem("user");
+
   console.log("isPhantomInstalled: ", isPhantomInstalled);
   if (userData) {
     if (!isPhantomInstalled) {
@@ -27,16 +32,47 @@ const Navbar = () => {
 
   useEffect(() => {
     if (userData) {
-      setAuth(JSON.parse(userData)); //
+      dispatch(setUser(JSON.parse(userData)));
+      setAuth(JSON.parse(userData));
       dispatch(setIsLogin(true));
     }
-  }, [countCart, islogin]);
+  }, [countCart, dispatch, islogin, userData]);
 
   const handleLogout = () => {
     dispatch(setIsLogin(false));
+    dispatch(setUser(null));
     localStorage.removeItem("user");
+    // navigate("/");
   };
 
+  useEffect(() => {
+    if (islogin && auth) {
+      setTimeout(() => {
+        HttpRequest.get(`/order/cart/${auth.id}`)
+          .then((res) => {
+            dispatch(setCountCart(res.data.orderdetails.length));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }, 100);
+    }
+  }, [auth, dispatch, islogin]);
+
+  // useEffect(() => {
+  //   setLoading(true);
+  //   dispatch(setSearchTextValue(debounceValue));
+  // }, [debounceValue]);
+
+  const handleOnKeyUp = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      dispatch(setSearchTextValue(e.target.value));
+      navigate(`/painting/searchengine?q=${searchTextValue}`);
+    }
+  };
+
+  console.log("paintingSearch: ", searchTextValue);
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light py-3 sticky-top">
       <div className="container">
@@ -87,9 +123,11 @@ const Navbar = () => {
               type="text"
               name="Search"
               id=""
-              className="w-100 rounded-3 p-2"
+              className="w-100 rounded-1 p-2"
               placeholder="Search"
               style={{ outline: "none", color: "#333" }}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyPress={handleOnKeyUp}
             />
           </div>
           <div className="buttons d-flex text-center">

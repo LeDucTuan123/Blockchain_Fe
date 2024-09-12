@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Footer, Navbar } from "../components";
 import HttpRequest from "../service/axios/Axios";
+import { toast } from "react-toastify";
 
 const Product = () => {
   const { id } = useParams();
@@ -56,6 +57,34 @@ const Product = () => {
 
   async function addProductToDB() {
     try {
+      let data = { ...product };
+      console.log("data: ", data);
+      //them vao localstore
+      // Lấy sản phẩm từ localStorage trước (nếu có)
+      let storedProducts =
+        JSON.parse(localStorage.getItem("cartProducts")) || [];
+
+      // Kiểm tra nếu sản phẩm đã tồn tại trong giỏ hàng
+      const productExists = storedProducts.find(
+        (item) =>
+          item.paintingId === data.paintingId && item.title === data.title
+      );
+
+      if (productExists) {
+        // Nếu sản phẩm đã tồn tại, tăng số lượng hoặc xử lý logic khác
+        toast.warning("Sản phẩm này đã tồn tại trong giỏ hàng!");
+        return;
+      } else {
+        // Thêm sản phẩm mới vào mảng
+        const newProduct = {
+          ...product,
+        };
+        // Nếu sản phẩm chưa tồn tại, thêm vào mảng
+        storedProducts.push(newProduct);
+        // Cập nhật localStorage với mảng sản phẩm mới
+        localStorage.setItem("cartProducts", JSON.stringify(storedProducts));
+      }
+
       const response = await HttpRequest.post("/order/create", {
         orderdate: new Date(),
         totalamount: null,
@@ -137,7 +166,11 @@ const Product = () => {
               <button
                 className="btn btn-outline-dark"
                 onClick={addProductToDB}
-                disabled={product.paintingId === user.id ? true : false}
+                disabled={
+                  product && product.user && product.user.id === user.id
+                    ? true
+                    : false
+                }
               >
                 Thêm vào giỏ hàng
               </button>

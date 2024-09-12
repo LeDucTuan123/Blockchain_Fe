@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   countCart: 0,
+  searchTextValue: "",
 };
 
 const commonSlice = createSlice({
@@ -11,12 +12,15 @@ const commonSlice = createSlice({
     setCountCart: (state, action) => {
       state.countCart = action.payload;
     },
+    setSearchTextValue: (state, action) => {
+      state.searchTextValue = action.payload;
+    },
   },
   extraReducers: (builder) => {},
 });
 
 const commonReducer = commonSlice.reducer;
 
-export const { setCountCart } = commonSlice.actions;
+export const { setCountCart, setSearchTextValue } = commonSlice.actions;
 
 export default commonReducer;

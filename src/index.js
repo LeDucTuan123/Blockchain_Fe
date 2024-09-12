@@ -4,13 +4,14 @@ import "../node_modules/font-awesome/css/font-awesome.min.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
+import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import {
   Home,
   Product,
-  Products,
+  Products as PRS,
   AboutPage,
   ContactPage,
   Cart,
@@ -28,15 +29,32 @@ import { store } from "./redux/store";
 import Wallet from "./pages/Profile/MyWallet/Wallet";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import MainLayout from "./layouts/mainLayout/MainLayout";
+import Products from "./components/Products";
+import { ToastContainer } from "react-toastify";
 // import DetailProduct from "./pages/DetailProduct";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
+    <ToastContainer
+      position="top-right"
+      autoClose={2000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+      // transition: Bounce,
+    />
+    {/* Same as */}
+    <ToastContainer />
     <Provider store={store}>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/product" element={<Products />} />
+        <Route path="/product" element={<PRS />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -49,8 +67,9 @@ root.render(
         <Route path="/product/*" element={<PageNotFound />} />
         <Route path="/profile/" element={<PageNotFound />} />
 
-        <Route path="/payment" element={<MainLayout />}>
-          <Route path="success" element={<PaymentSuccess />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route path="payment/success" element={<PaymentSuccess />} />
+          <Route path="painting/:searchengine" element={<Products />} />
         </Route>
 
         {/* //profile */}

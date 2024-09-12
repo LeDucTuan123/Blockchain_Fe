@@ -153,6 +153,7 @@ const Checkout = () => {
                   <ul className="list-group list-group-flush">
                     <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                       Sản phẩm
+                      <span>{productPay.title}</span>
                     </li>
                     <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                       Shipping
@@ -163,7 +164,7 @@ const Checkout = () => {
                         <strong>Tổng tiền</strong>
                       </div>
                       <span>
-                        <strong>{productPay.price}$</strong>
+                        <strong>{productPay.price} (SOL)</strong>
                       </span>
                     </li>
                   </ul>

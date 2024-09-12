@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
-import { login, setIsLogin } from "../redux/slices/authSlice";
+import { login, setIsLogin, setUser } from "../redux/slices/authSlice";
 import { useAppDispatch } from "../redux/store";
+import { toast } from "react-toastify";
+import HttpRequest from "../service/axios/Axios";
 
 const Login = () => {
   const dispatch = useAppDispatch();
@@ -18,26 +20,35 @@ const Login = () => {
     localStorage.removeItem("user");
 
     // Kiểm tra giá trị của email và password
-    if (email === "" || password === "") {
+    if (!email || !password) {
       // Hiển thị lỗi bên dưới form
-      const errorElement = document.querySelector("#error");
-
-      if (errorElement && errorElement.classList) {
-        errorElement.classList.remove("hidden");
-        errorElement.textContent = "Vui lòng nhập email và mật khẩu";
-      }
-
-      // Chặn không cho submit form
+      toast.warning("Vui lòng nhập email và mật khẩu");
       return;
-    } else {
-      // Ẩn lỗi
-      const errorElement = document.querySelector("#error");
-      errorElement?.classList.add("hidden");
     }
 
-    dispatch(login({ email, password }));
-    dispatch(setIsLogin(true));
-    route("/");
+    try {
+      const res = await HttpRequest.get("/user/list");
+      const existingAccount = res.data.find(
+        (account) => account.email === email
+      );
+      if (existingAccount) {
+        if (existingAccount.password === password) {
+          dispatch(login({ email, password }));
+          localStorage.setItem("user", JSON.stringify(existingAccount));
+          dispatch(setIsLogin(true));
+          // window.location.href = "/";
+          route("/");
+        } else {
+          toast.error("Sai mật khẩu.");
+          return;
+        }
+      } else {
+        alert("Không có tài khoản có email bạn nhập.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Kết nối server thất bại. Vui lòng thử lại sau.");
+    }
   };
 
   return (

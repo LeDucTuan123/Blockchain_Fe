@@ -8,9 +8,14 @@ import {
   LAMPORTS_PER_SOL,
   PublicKey,
 } from "@solana/web3.js";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../../../redux/store";
+import { setIsLogin, setUser } from "../../../redux/slices/authSlice";
 
 export default function Wallet() {
   const [isConnect, setIsConnect] = useState(false);
+  const dispatch = useAppDispatch();
   // const [place, setPlace] = useState("");
   // const [listPlace, setListPlace] = useState([]);
 
@@ -18,6 +23,8 @@ export default function Wallet() {
   const [balance, setBalance] = useState(0);
   const walletName = localStorage.getItem("walletName");
   const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
+  const islogin = useSelector((state) => state.auth?.isLogin);
   var provider = null;
 
   const isPhantomInstalled = window.phantom?.solana?.isPhantom;
@@ -26,22 +33,26 @@ export default function Wallet() {
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
   // Địa chỉ ví (public key) mà bạn muốn kiểm tra số dư
-  const publicKey = new PublicKey(user.wallet);
 
   useEffect(() => {
     async function getBalance() {
       try {
-        // Lấy số dư của ví
-        const balance = await connection.getBalance(publicKey);
-        setBalance(balance / 1e9); // Chia cho 1e9 để chuyển từ lamports sang SOL
-        setWallet(publicKey.toBase58()); // lay dia chi vi
-        console.log("wallet:", wallet);
+        if (user.wallet && user.wallet.length > 0) {
+          // Lấy số dư của ví
+          const publicKey = new PublicKey(user.wallet);
+          const balance = await connection.getBalance(publicKey);
+          setBalance(balance / 1e9); // Chia cho 1e9 để chuyển từ lamports sang SOL
+          setWallet(publicKey.toBase58()); // lay dia chi vi
+          console.log("wallet:", wallet);
+        }
       } catch (error) {
         console.error("Lỗi khi lấy số dư:", error);
       }
     }
-    getBalance();
-  }, [connection, publicKey]);
+    if (user?.wallet) {
+      getBalance();
+    }
+  }, [connection, user.wallet, wallet]);
 
   if (user) {
     if (!isPhantomInstalled) {
@@ -102,6 +113,13 @@ export default function Wallet() {
     }
   }
 
+  const handleLogout = () => {
+    dispatch(setIsLogin(false));
+    dispatch(setUser(null));
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <>
       {/* <Context>
@@ -125,6 +143,21 @@ export default function Wallet() {
                   <p>Số dư: {balance} (SOL)</p>
                   <p>Địa chỉ ví: {wallet}</p>
                 </div>
+                {(user.wallet && user.wallet.length === 0) ||
+                  (user.wallet === null && (
+                    <div className="d-flex gap-2">
+                      <button
+                        className={"btn btn-warning"}
+                        style={{ width: "150px" }}
+                        onClick={handleLogout}
+                      >
+                        Đăng xuất
+                      </button>
+                      <span>
+                        (Vui lòng đăng xuất để hệ thống cập nhật ví cho bạn!!!)
+                      </span>
+                    </div>
+                  ))}
                 <button
                   className={"btn btn-danger"}
                   style={{ width: "150px" }}

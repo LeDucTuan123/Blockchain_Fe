@@ -21,10 +21,24 @@ const Products = () => {
     // dispatch(addCart(product));
   };
 
+  const searchTextValue = useSelector((state) => state.common?.searchTextValue);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await HttpRequest.get(
+        `/painting/search?q=${searchTextValue}`
+      );
+      console.log("data search: ", res.data);
+    };
+    fetch();
+  }, [searchTextValue]);
+
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await HttpRequest.get("/painting/list");
+      const response = await HttpRequest.get(
+        `/painting/search?q=${searchTextValue}`
+      );
       // console.log(response.data);
       if (componentMounted) {
         setData(await response.data);
@@ -39,7 +53,7 @@ const Products = () => {
     };
 
     getProducts();
-  }, []);
+  }, [searchTextValue]);
 
   console.log(countProduct);
 

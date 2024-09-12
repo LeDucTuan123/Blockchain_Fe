@@ -7,7 +7,7 @@ import { useAppDispatch } from "../redux/store";
 import { setCountCart } from "../redux/slices/commonSlice";
 
 const Cart = () => {
-  const state = useSelector((state) => state.handleCart);
+  // const state = useSelector((state) => state.handleCart);
   // const dispatch = useDispatch();
 
   const EmptyCart = () => {
@@ -30,10 +30,12 @@ const Cart = () => {
   const ShowCart = ({ dataCart, setDataCart }) => {
     console.log("showw: ", dataCart);
 
+    const [checked, setChecked] = useState(false);
     const [productPay, setProductPay] = useState();
 
     // check để thêm sản phẩm vào mảng thanh toán
     function handleCheckToPay(e, id, title) {
+      const isChecked = e.target.checked;
       console.log(
         "e: ",
         e.target.checked + "---id: ",
@@ -41,16 +43,16 @@ const Cart = () => {
         title
       );
       // setCheckAll(!checkAll);
-      let checked = e.target.checked;
-      if (checked) {
+      setChecked(isChecked);
+      if (isChecked) {
         let p = dataCart?.find((item) => {
           return item.paintingId === id && item.title === title;
         });
         console.log("p: ", p);
-        console.log("Checked:", checked);
+        console.log("Checked:", isChecked);
         console.log("Product found (p):", p);
 
-        if (checked) {
+        if (isChecked) {
           setProductPay(p);
         } else {
           setProductPay((prev) =>
@@ -58,15 +60,11 @@ const Cart = () => {
               (item) => item.paintingId !== id || item.title !== title
             )
           );
+          // setProductPay("");
         }
+      } else {
+        setProductPay(undefined);
       }
-      // else {
-      //   setProductPay((prev) => {
-      //     return prev?.filter((item) => {
-      //       return item.title !== title;
-      //     });
-      //   });
-      // }
     }
 
     // function handleCheckAll(e) {
@@ -157,6 +155,12 @@ const Cart = () => {
                                           item.paintingId,
                                           item.title
                                         )
+                                      }
+                                      disabled={
+                                        checked &&
+                                        item.paintingId !==
+                                          productPay.paintingId &&
+                                        true
                                       }
                                       // checked={
                                       //   productPay &&
@@ -255,11 +259,11 @@ const Cart = () => {
                     <ul className="list-group list-group-flush">
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                         Sản phẩm
-                        <span>$</span>
+                        <strong>{productPay && productPay.title}</strong>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center px-0">
                         Tiền vận chuyển
-                        <span>$</span>
+                        <strong>{productPay && "Free"}</strong>
                       </li>
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                         <div>
@@ -267,16 +271,14 @@ const Cart = () => {
                         </div>
                         <div>
                           <strong>
-                            {productPay &&
+                            {/* {productPay &&
                               productPay.length > 0 &&
                               productPay.reduce((total, item) => {
                                 return total + Number(item.price);
-                              }, 0)}
+                              }, 0)} */}
+                            {productPay && productPay.price} (SOL)
                           </strong>
                         </div>
-                        <span>
-                          <strong>$</strong>
-                        </span>
                       </li>
                     </ul>
 
