@@ -173,6 +173,14 @@ const Navbar = () => {
                     <li>
                       <Link
                         className="dropdown-item d-flex align-items-center h-100"
+                        to="/admin/dashboard"
+                      >
+                        Trang quảng trị
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item d-flex align-items-center h-100"
                         to="/member/profile"
                       >
                         Thông tin cá nhân

@@ -54,6 +54,7 @@ export default function Form() {
         price: dataPainting.price,
         paintingDescription: dataPainting.paintingDescription,
         imageUrl: String(dataPainting.imageUrl),
+        status: 0,
       };
       console.log("Payload: ", payload);
 

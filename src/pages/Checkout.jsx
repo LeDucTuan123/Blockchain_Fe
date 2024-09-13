@@ -56,6 +56,8 @@ const Checkout = () => {
     // JCujWVsP2XHR5uQ7LG2HiRbhNskUs1vbd7Tgxnhf9CnozkmEf3m7f5KgU9T2qgrkeTTRSVTngbv3nkNgHjPftjQ
     const [address, setAddress] = useState("");
 
+    const user = JSON.parse(localStorage.getItem("user"));
+
     async function handleSend(wallet, sols) {
       provider = getProvider();
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
@@ -99,6 +101,7 @@ const Checkout = () => {
         alert("Vui long nhap dia chi nhan hang");
         return;
       }
+
       if (await handleSend(wallet, sols)) {
         HttpRequest({
           method: "POST",
@@ -110,7 +113,7 @@ const Checkout = () => {
             orderdate: new Date(),
             codeorder: `Blc${faker.string.uuid().slice(0, 7)}`,
             totalamount: sols,
-            receiver: "le duc tuan",
+            receiver: `${user.firstname} ${user.lastname}`,
             user: { id: 1 },
             statuss: { id: 2 },
             address: address,
@@ -127,12 +130,34 @@ const Checkout = () => {
         })
           .then(() => {
             alert("Thanh toan thanh cong");
+
             navigate("/payment/success");
           })
           .catch((error) => {
             console.error("Error adding painting: ", error);
             alert("Thanh toan that bai");
           });
+
+        const response = await HttpRequest({
+          method: "GET",
+          url: `http://localhost:8000/painting/${id}`,
+        });
+
+        const currentPainting = response.data;
+
+        await HttpRequest({
+          method: "PUT",
+          url: `http://localhost:8000/painting/update/${id}`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: {
+            ...currentPainting,
+            status: true,
+          },
+        })
+          .then()
+          .catch((error) => console.log(`error: `, error));
       }
     };
 

@@ -227,9 +227,7 @@ const Product = () => {
                       width={300}
                     />
                     <div className="card-body">
-                      <h5 className="card-title">
-                        {item.title.substring(0, 15)}...
-                      </h5>
+                      <h5 className="card-title">{item.title}</h5>
                     </div>
                   </Link>
                   {/* <ul className="list-group list-group-flush">

@@ -31,6 +31,11 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import MainLayout from "./layouts/mainLayout/MainLayout";
 import Products from "./components/Products";
 import { ToastContainer } from "react-toastify";
+import { AdminLayout } from "./layouts/AdminLayout";
+import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
+import { AdminProductPage } from "./pages/Admin/Product";
+import { AdminUserPage } from "./pages/Admin/User";
+import { AdminOrderPage } from "./pages/Admin/Order";
 // import DetailProduct from "./pages/DetailProduct";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -80,6 +85,15 @@ root.render(
           <Route path="address" element={<h1>Địa chỉ</h1>} />
           <Route path="notification" element={<h1>Thông báo</h1>} />
           <Route path="mywallet" element={<Wallet />} />
+        </Route>
+
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index={true} element={<AdminDashboardPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="products" element={<AdminProductPage />} />
+          <Route path="user" element={<AdminUserPage />} />
+          <Route path="setting" element={<h1>setting</h1>} />
+          <Route path="order" element={<AdminOrderPage />} />
         </Route>
       </Routes>
     </Provider>
