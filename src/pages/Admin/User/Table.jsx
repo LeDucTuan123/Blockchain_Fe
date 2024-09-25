@@ -29,8 +29,8 @@ export default function Table({ filteredUser }) {
         <tbody>
           {filteredUser &&
             filteredUser.map((item, index) => (
-              <tr key={item.paintingId}>
-                <td>{index + 1}</td>
+              <tr key={item.id}>
+                <td>{item.id}</td>
 
                 <td>{item.firstname}</td>
                 <td>{item.lastname}</td>

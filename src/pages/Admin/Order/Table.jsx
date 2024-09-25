@@ -6,7 +6,8 @@ export default function Table({ order }) {
   const [dataProductOrder, setDataProductOrder] = useState();
   const [detailOrder, setDetailOrder] = useState();
 
-  const handleOnclickModel = (id, order) => {
+  const handleOnclickModel = (order) => {
+    let id = order.orderdetails[0].paintingid;
     HttpRequest.get(`/painting/${id}`).then((res) => {
       console.log(res.data);
       setDataProductOrder(res.data);
@@ -51,9 +52,7 @@ export default function Table({ order }) {
                     className="btn btn-light"
                     data-bs-toggle="modal"
                     data-bs-target="#staticBackdrop"
-                    onClick={() =>
-                      handleOnclickModel(item.orderdetails[0].paintingid, item)
-                    }
+                    onClick={() => handleOnclickModel(item)}
                   >
                     Chi tiết
                   </button>

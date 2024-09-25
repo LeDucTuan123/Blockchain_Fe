@@ -136,7 +136,7 @@ const Cart = () => {
                       dataCart.map((item) => {
                         return (
                           <div
-                            className="d-flex justify-content-between"
+                            className="d-flex justify-content-between pb-2"
                             key={item.paintingId}
                           >
                             <div className="col-md-12 row d-flex align-items-center">
@@ -145,7 +145,7 @@ const Cart = () => {
                                   className="bg-image d-flex d-flex align-items-center rounded"
                                   data-mdb-ripple-color="light"
                                 >
-                                  <div className="d-flex  align-items-center mr-2 mb-5">
+                                  <div className="d-flex  mr-2 mb-5">
                                     <input
                                       className="h-5 w-5"
                                       type="checkbox"

@@ -7,6 +7,7 @@ export default function Table({ filteredProducts }) {
         <thead>
           <th>STT</th>
           <th>Ảnh</th>
+          <th>Người bán</th>
           <th>Tên sản phẩm</th>
           <th>Miêu tả</th>
           <th>Giá</th>
@@ -26,6 +27,7 @@ export default function Table({ filteredProducts }) {
                     style={{ objectFit: "cover" }}
                   />
                 </td>
+                <td>{item.user && item.user.email}</td>
                 <td>{item.title}</td>
                 <td>{item.paintingDescription}</td>
                 <td>{item.price}</td>

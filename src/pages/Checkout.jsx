@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Footer, Navbar } from "../components";
 import { faker } from "@faker-js/faker";
 // import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import {
 import bs58 from "bs58";
 import { Buffer } from "buffer";
 import HttpRequest from "../service/axios/Axios";
+import axios from "axios";
 Buffer.from("anything", "base64");
 
 if (typeof window !== "undefined") {
@@ -55,8 +56,83 @@ const Checkout = () => {
   const ShowCheckout = () => {
     // JCujWVsP2XHR5uQ7LG2HiRbhNskUs1vbd7Tgxnhf9CnozkmEf3m7f5KgU9T2qgrkeTTRSVTngbv3nkNgHjPftjQ
     const [address, setAddress] = useState("");
-
     const user = JSON.parse(localStorage.getItem("user"));
+
+    const [listAddress, setListAddress] = useState([]);
+    const [listDistrics, setListDistrics] = useState([]);
+    const [listWards, setListWards] = useState([]);
+    const [infomation, setInformation] = useState({
+      address: "",
+      city: "",
+      district: "",
+      ward: "",
+    });
+
+    useEffect(() => {
+      // gọi api lấy địa chỉ
+      axios
+        .get(
+          "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+        )
+        .then((res) => {
+          setListAddress(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }, []);
+
+    // hàm sẽ chạy khi chọn tỉnh thành
+    function handleChangeCity(e) {
+      const c = listAddress.find((item) => {
+        return item.Id === e.target.value;
+      });
+      if (c) {
+        setListDistrics(c.Districts);
+        setInformation((i) => {
+          return { ...i, city: c.Name };
+        });
+      } else {
+        setListDistrics([]);
+        setInformation((i) => {
+          return { ...i, city: "", district: "", ward: "" };
+        });
+      }
+      setListWards([]);
+    }
+
+    // hàm sẽ chạy khi chọn phường
+    function handleChangeDistric(e) {
+      const d = listDistrics.find((item) => {
+        return item.Id === e.target.value;
+      });
+      if (d) {
+        setListWards(d.Wards);
+        setInformation((i) => {
+          return { ...i, district: d.Name };
+        });
+      } else {
+        setListWards([]);
+        setInformation((i) => {
+          return { ...i, district: "", ward: "" };
+        });
+      }
+    }
+    // hàm sẽ chạy khi chọn xã
+    function handleChangeWard(e) {
+      const w = listWards.find((item) => {
+        return item.Id === e.target.value;
+      });
+      if (w) {
+        setInformation((i) => {
+          return { ...i, ward: w.Name };
+        });
+      } else {
+        setInformation((i) => {
+          return { ...i, ward: "" };
+        });
+      }
+    }
 
     async function handleSend(wallet, sols) {
       provider = getProvider();
@@ -114,7 +190,7 @@ const Checkout = () => {
             codeorder: `Blc${faker.string.uuid().slice(0, 7)}`,
             totalamount: sols,
             receiver: `${user.firstname} ${user.lastname}`,
-            user: { id: 1 },
+            user: { id: user.id },
             statuss: { id: 2 },
             address: address,
             orderdetails: [
@@ -161,9 +237,53 @@ const Checkout = () => {
       }
     };
 
-    const handleOnchange = (e) => {
-      setAddress(e.target.value);
-    };
+    // const handleOnchange = (e) => {
+    //   setAddress(infomation.address);
+    // };
+
+    function validation(i) {
+      let error = { address: "", city: "", district: "", ward: "" };
+
+      if (i.address.trim().length === 0) {
+        error.address = "Thông tin này không được để trống";
+      }
+
+      if (i.city.trim().length === 0) {
+        error.city = "Thông tin này không được để trống";
+      }
+
+      if (i.district.trim().length === 0) {
+        error.district = "Thông tin này không được để trống";
+      }
+
+      if (i.ward.trim().length === 0) {
+        error.ward = "Thông tin này không được để trống";
+      }
+
+      return error;
+    }
+
+    useEffect(() => {
+      const valueAddress = () => {
+        let newAddress = "";
+
+        if (infomation.ward) newAddress = infomation.ward + ", ";
+        if (infomation.district) newAddress += infomation.district + ", ";
+        if (infomation.city) newAddress += infomation.city;
+
+        setInformation((prev) => ({
+          ...prev,
+          address: newAddress, // Chỉ cập nhật trường 'address' mà không thay đổi các trường khác
+        }));
+        setAddress(infomation.address);
+      };
+      valueAddress();
+    }, [
+      infomation.address,
+      infomation.city,
+      infomation.district,
+      infomation.ward,
+    ]);
 
     return (
       <>
@@ -202,10 +322,75 @@ const Checkout = () => {
                   <h4 className="mb-0">Nhập thông tin</h4>
                 </div>
                 <div className="card-body">
-                  <div className="row g-3">
+                  {/* 00------------------------------- */}
+
+                  <div className="mt-4">
+                    <label className="text-[15px] mr-3 w-[170px] inline-block">
+                      Tỉnh/Thành Phố
+                    </label>
+                    <select
+                      onChange={(e) => handleChangeCity(e)}
+                      className="py-1 text-[14px] font-bold outline-1 outline-blue-300 border-[#ced4da] rounded-sm h-[30px] w-[446px] text-[#495057]"
+                    >
+                      <option value="">-- Chọn tỉnh thành --</option>
+                      {listAddress &&
+                        listAddress.map((item) => {
+                          return (
+                            <option key={item.Id} value={item.Id}>
+                              {item.Name}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="text-[15px] mr-3 w-[170px] inline-block">
+                      Quận/Huyện
+                    </label>
+                    <select
+                      disabled={listDistrics && listDistrics.length === 0}
+                      onChange={(e) => handleChangeDistric(e)}
+                      className="py-1 text-[14px] font-bold outline-1 outline-blue-300 border-[#ced4da] rounded-sm h-[30px] w-[446px] text-[#495057]"
+                    >
+                      <option value="">-- Chọn quận huyện --</option>
+                      {listDistrics &&
+                        listDistrics.map((item) => {
+                          return (
+                            <option key={item.Id} value={item.Id}>
+                              {item.Name}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="text-[15px] mr-3 w-[170px] inline-block">
+                      Phường/Xã
+                    </label>
+                    <select
+                      onChange={(e) => handleChangeWard(e)}
+                      disabled={listWards && listWards.length === 0}
+                      className="py-1 text-[14px] font-bold outline-1 outline-blue-300 border-[#ced4da] rounded-sm h-[30px] w-[446px] text-[#495057]"
+                    >
+                      <option value="">-- Chọn phường xã --</option>
+                      {listWards &&
+                        listWards.map((item) => {
+                          return (
+                            <option key={item.Id} value={item.Id}>
+                              {item.Name}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+
+                  {/* 00------------------------------- */}
+                  <div className="row g-3 mt-4">
                     <div className="col-12 my-1">
                       <label for="address" className="form-label">
-                        Địa chỉ
+                        Địa chỉ nhận hàng
                       </label>
                       <input
                         type="text"
@@ -213,8 +398,8 @@ const Checkout = () => {
                         id="address"
                         placeholder="1234 Main St"
                         required
-                        value={address}
-                        onChange={(e) => handleOnchange(e)}
+                        value={infomation.address}
+                        disabled
                       />
                       {/* <div className="invalid-feedback">
                           Please enter your shipping address.

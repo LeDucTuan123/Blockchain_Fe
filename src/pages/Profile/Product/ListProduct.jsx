@@ -41,10 +41,10 @@ export default function ListProduct({
 
   return (
     <>
-      <table class="table">
+      <table className="table">
         <thead>
           <tr>
-            <th scope="col">Id</th>
+            <th scope="col">STT</th>
             <th scope="col">Tên tranh</th>
             <th scope="col">Giá</th>
             <th scope="col">Mô tả</th>
@@ -53,33 +53,38 @@ export default function ListProduct({
           </tr>
         </thead>
         <tbody>
-          {fetchDataProduct.map((item) => (
+          {fetchDataProduct.map((item, index) => (
             <tr key={item.paintingId}>
-              <th scope="row">{item.paintingId}</th>
-              <td>{item.title.substring(0, 12)}...</td>
-              <td>${item.price}</td>
-              <td>{item.paintingDescription.substring(0, 90)}...</td>
-              <td>
+              <th scope="row" className=" align-middle">
+                {/* {item.paintingId} */}
+                {++index}
+              </th>
+              <td className=" align-middle">{item.title}</td>
+              <td className=" align-middle">${item.price}</td>
+              <td className=" align-middle">{item.paintingDescription}</td>
+              <td className=" align-middle">
                 <img
-                  className="card-img-top p-3 "
+                  className="card-img-top p-3"
                   src={`${item.imageUrl}`}
                   alt="Card"
                   style={{ height: "200px" }}
                 />
               </td>
-              <td className="d-flex gap-2">
-                <button
-                  className="btn btn-danger"
-                  onClick={() => onHandleDeleteProduct(item)}
-                >
-                  Xóa
-                </button>
-                <button
-                  className="btn btn-warning"
-                  onClick={() => onHandleEditProduct(item)}
-                >
-                  Sửa
-                </button>
+              <td className="  align-middle">
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => onHandleDeleteProduct(item)}
+                  >
+                    Xóa
+                  </button>
+                  <button
+                    className="btn btn-warning"
+                    onClick={() => onHandleEditProduct(item)}
+                  >
+                    Sửa
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

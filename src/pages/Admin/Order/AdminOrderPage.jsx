@@ -10,7 +10,7 @@ export default function AdminOrderPage() {
   useEffect(() => {
     const fetchDataOrder = async () => {
       try {
-        const res = await HttpRequest.get(`/order/ordersuccess/${user.id}`);
+        const res = await HttpRequest.get(`/order/ordersuccess`);
         setOrder(res.data);
         console.log("res: ", res.data);
       } catch (error) {

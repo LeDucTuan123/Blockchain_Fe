@@ -6,6 +6,7 @@ import { useDropzone } from "react-dropzone";
 import { storage } from "../../../service/firebase";
 import ListProduct from "./ListProduct";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useSelector } from "react-redux";
 
 const formPainting = {
   paintingId: "",
@@ -23,9 +24,11 @@ export default function Form() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowEdit, setIsShowEdit] = useState(false);
   const [fetchDataProduct, setFetchDataProduct] = useState([]);
+  const user = useSelector((state) => state.auth?.user);
+  console.log("user: ", user.id);
 
   useEffect(() => {
-    HttpRequest.get("painting/list").then((res) => {
+    HttpRequest.get(`painting/list/${user.id}`).then((res) => {
       setFetchDataProduct(res.data);
     });
   }, []);
@@ -50,7 +53,7 @@ export default function Form() {
     try {
       const payload = {
         title: dataPainting.title,
-        user: { id: 3 },
+        user: { id: user.id },
         price: dataPainting.price,
         paintingDescription: dataPainting.paintingDescription,
         imageUrl: String(dataPainting.imageUrl),

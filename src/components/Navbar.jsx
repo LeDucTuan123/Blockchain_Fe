@@ -103,11 +103,11 @@ const Navbar = () => {
               Sản phẩm
             </NavLink>
           </li>
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <NavLink className="nav-link" to="/member/profile">
               About
             </NavLink>
-          </li>
+          </li> */}
           {/* <li className="nav-item">
             <NavLink className="nav-link" to="/contact">
               Contact
@@ -170,14 +170,16 @@ const Navbar = () => {
                     className="dropdown-menu"
                     aria-labelledby="dropdownMenuButton"
                   >
-                    <li>
-                      <Link
-                        className="dropdown-item d-flex align-items-center h-100"
-                        to="/admin/dashboard"
-                      >
-                        Trang quảng trị
-                      </Link>
-                    </li>
+                    {auth && auth.role === "ADMIN" && (
+                      <li>
+                        <Link
+                          className="dropdown-item d-flex align-items-center h-100"
+                          to="/admin/dashboard"
+                        >
+                          Trang quảng trị
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <Link
                         className="dropdown-item d-flex align-items-center h-100"

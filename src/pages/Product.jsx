@@ -167,12 +167,15 @@ const Product = () => {
                 className="btn btn-outline-dark"
                 onClick={addProductToDB}
                 disabled={
-                  product && product.user && product.user.id === user.id
+                  (product && product.user && product.user.id === user.id) ||
+                  product.status === true
                     ? true
                     : false
                 }
               >
-                Thêm vào giỏ hàng
+                {product.status === true
+                  ? "Sản phẩm đã bán"
+                  : "Thêm vào giỏ hàng"}
               </button>
               <Link to="/cart" className="btn btn-dark  mx-3">
                 Đến giỏ hàng
@@ -214,17 +217,22 @@ const Product = () => {
           <div className="d-flex">
             {similarProducts.map((item) => {
               return (
-                <div key={item.paintingId} className="card mx-4 text-center">
+                <div
+                  key={item.paintingId}
+                  className="card mx-4 text-center"
+                  style={{ width: "308px" }}
+                >
                   <Link
                     to={`/product/${item.paintingId}`}
                     style={{ color: "#333", textDecoration: "none" }}
                   >
                     <img
                       className="card-img-top p-3"
-                      src={item.image}
+                      src={item.imageUrl}
                       alt="Card"
-                      height={300}
-                      width={300}
+                      height={200}
+                      width={200}
+                      style={{ objectFit: "cover" }}
                     />
                     <div className="card-body">
                       <h5 className="card-title">{item.title}</h5>
@@ -234,17 +242,19 @@ const Product = () => {
                     <li className="list-group-item lead">${product.price}</li>
                   </ul> */}
                   <div className="card-body">
-                    <Link
-                      to={"/product/" + item.paintingId}
-                      className="btn btn-dark m-1"
-                    >
-                      Mua ngay
-                    </Link>
                     <button
                       className="btn btn-dark m-1"
                       onClick={() => addProduct(item)}
+                      disabled={
+                        (item && item.user && item.user.id === user.id) ||
+                        item.status === true
+                          ? true
+                          : false
+                      }
                     >
-                      Thêm vào giỏ hàng
+                      {item.status === true
+                        ? "Sản phẩm đã bán"
+                        : "Thêm vào giỏ hàng"}
                     </button>
                   </div>
                 </div>
