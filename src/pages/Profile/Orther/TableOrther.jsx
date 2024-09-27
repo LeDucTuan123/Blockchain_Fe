@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import HttpRequest from "../../../service/axios/Axios";
+import DetailOrder from "./DetailOrder";
 
 export default function TableOrther() {
   const [dataOrder, setDataOrder] = useState();
   const user = JSON.parse(localStorage.getItem("user"));
+  const [dataProductOrder, setDataProductOrder] = useState();
+  const [detailOrder, setDetailOrder] = useState();
 
   useEffect(() => {
     const FetchData = async () => {
@@ -13,6 +16,17 @@ export default function TableOrther() {
     FetchData();
   }, [user.id]);
   console.log("first: ", dataOrder);
+
+  const handleOnclickModel = (order) => {
+    let id = order.orderdetails[0].paintingid;
+    HttpRequest.get(`/painting/${id}`).then((res) => {
+      console.log(res.data);
+      setDataProductOrder(res.data);
+      setDetailOrder(order);
+      console.log("detailOrder: ", detailOrder);
+    });
+  };
+
   return (
     <div className=" w-100 rounded-lg">
       <h1 className="text-uppercase text-lg font-bold">Đơn hàng của tôi</h1>
@@ -74,7 +88,12 @@ export default function TableOrther() {
                       </span>
                     </td>
                     <td className="text-center">
-                      <button className="btn btn-link text-danger">
+                      <button
+                        className="btn btn-link text-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop"
+                        onClick={() => handleOnclickModel(item)}
+                      >
                         Xem chi tiết
                       </button>
                     </td>
@@ -83,6 +102,10 @@ export default function TableOrther() {
             </tbody>
           </>
         </table>
+        <DetailOrder
+          dataProductOrder={dataProductOrder}
+          detailOrder={detailOrder}
+        />
       </div>
     </div>
   );

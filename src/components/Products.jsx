@@ -15,12 +15,6 @@ const Products = () => {
   const [countProduct, setCountProduct] = useState(9);
   let componentMounted = true;
 
-  const dispatch = useDispatch();
-
-  const addProduct = (product) => {
-    // dispatch(addCart(product));
-  };
-
   const searchTextValue = useSelector((state) => state.common?.searchTextValue);
 
   useEffect(() => {
@@ -92,39 +86,6 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        {/* <div className="buttons text-center py-5">
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => setFilter(data)}
-          >
-            All
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("men's clothing")}
-          >
-            Men's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("women's clothing")}
-          >
-            Women's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("jewelery")}
-          >
-            Jewelery
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("electronics")}
-          >
-            Electronics
-          </button>
-        </div> */}
-
         {filter.slice(0, countProduct).map((product) => {
           return (
             <div
@@ -222,11 +183,11 @@ const Products = () => {
       <div className="container my-3 py-3">
         <div className="row">
           <div className="col-12">
-            <h2 className="display-5 text-center">Sản phẩm mới nhất</h2>
+            <h5 className="display-5 ">Sản phẩm nổi bậc</h5>
             <hr />
           </div>
         </div>
-        <div className="row justify-content-center">
+        <div className="row ">
           {loading ? <Loading /> : <ShowProducts />}
           <div
             style={{

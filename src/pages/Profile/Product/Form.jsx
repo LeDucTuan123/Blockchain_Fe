@@ -7,13 +7,14 @@ import { storage } from "../../../service/firebase";
 import ListProduct from "./ListProduct";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const formPainting = {
   paintingId: "",
   title: "",
   paintingDescription: "",
   price: "",
-  artist: { id: "", username: "" },
+  // artist: { id: "", username: "" },
   imageUrl: "",
 };
 
@@ -24,8 +25,11 @@ export default function Form() {
   const [isLoading, setIsLoading] = useState(false);
   const [isShowEdit, setIsShowEdit] = useState(false);
   const [fetchDataProduct, setFetchDataProduct] = useState([]);
-  const user = useSelector((state) => state.auth?.user);
-  console.log("user: ", user.id);
+  // const user = useSelector((state) => state.auth?.user);
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+  // console.log("user: ", user.id);
 
   useEffect(() => {
     HttpRequest.get(`painting/list/${user.id}`).then((res) => {
@@ -88,23 +92,30 @@ export default function Form() {
 
   const uploadImage = () => {
     setTimeout(async () => {
-      await fetch({
+      await HttpRequest({
         method: "PUT",
         url: `http://localhost:8000/painting/update/${dataPainting.paintingId}`,
         headers: {
           "Content-Type": "application/json",
         },
         data: JSON.stringify({
+          ...dataPainting,
           paintingDescription: dataPainting.paintingDescription,
           price: dataPainting.price,
           imageUrl: String(dataPainting.imageUrl),
           title: dataPainting.title,
+          status: false,
+          user: { id: user.id },
         }),
-      });
+      })
+        .then((res) => {
+          console.log("res: ", res.data);
+          setIsLoading(false);
+          setIsShowEdit(false);
+          toast.success("Update thành công");
+        })
+        .then((err) => console.log(err));
 
-      setIsLoading(false);
-      setIsShowEdit(false);
-      alert("Update thành công");
       // return setfetchDataBook(fetdataUpdate);
       setFetchDataProduct((prev) =>
         prev.map((item) =>
@@ -176,12 +187,12 @@ export default function Form() {
   };
 
   const handleEditPainting = (item) => {
-    console.log("data:", item);
+    // console.log("data:", item);
     setDataPainting((prev) => ({
       ...prev,
       paintingId: item.paintingId,
       title: item.title,
-      artist: item.artist.id,
+      // artist: item.artist.id,
       imageUrl: item.imageUrl,
       paintingDescription: item.paintingDescription,
       price: item.price,
@@ -237,7 +248,7 @@ export default function Form() {
               className="form-control"
               placeholder="name"
               aria-label="name"
-              value={dataPainting.title}
+              value={dataPainting && dataPainting.title}
               onChange={(e) =>
                 setDataPainting((prev) => ({ ...prev, title: e.target.value }))
               }
@@ -250,7 +261,7 @@ export default function Form() {
               className="form-control"
               placeholder="$100"
               aria-label="price"
-              value={dataPainting.price}
+              value={dataPainting && dataPainting.price}
               onChange={(e) =>
                 setDataPainting((prev) => ({ ...prev, price: e.target.value }))
               }
@@ -263,7 +274,7 @@ export default function Form() {
               className="form-control"
               placeholder="..."
               aria-label="description"
-              value={dataPainting.paintingDescription}
+              value={dataPainting && dataPainting.paintingDescription}
               onChange={(e) =>
                 setDataPainting((prev) => ({
                   ...prev,

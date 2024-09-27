@@ -5,6 +5,7 @@ import { useAppDispatch } from "../redux/store";
 import { setIsLogin, setUser } from "../redux/slices/authSlice";
 import { setCountCart, setSearchTextValue } from "../redux/slices/commonSlice";
 import HttpRequest from "../service/axios/Axios";
+import logo from "../image/logo.jpg";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
@@ -78,7 +79,16 @@ const Navbar = () => {
       <div className="container">
         <NavLink className="navbar-brand fw-bold fs-4 px-2" to="/">
           {" "}
-          Solana
+          <img
+            src={logo}
+            alt="logo"
+            style={{
+              width: "80px",
+              height: "80px",
+              objectFit: "cover",
+              borderRadius: "50%",
+            }}
+          />
         </NavLink>
         <button
           className="navbar-toggler mx-2"
@@ -125,7 +135,11 @@ const Navbar = () => {
               id=""
               className="w-100 rounded-1 p-2"
               placeholder="Search"
-              style={{ outline: "none", color: "#333" }}
+              style={{
+                outline: "none",
+                color: "#333",
+                border: "1px solid #3333",
+              }}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyPress={handleOnKeyUp}
             />

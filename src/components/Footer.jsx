@@ -1,4 +1,5 @@
 import React from "react";
+import logo from "../image/logo.jpg";
 
 const Footer = () => {
   return (
@@ -6,13 +7,19 @@ const Footer = () => {
       <footer className="mb-0 p-5 bg-black " style={{ height: "400px" }}>
         <div className="container">
           <div style={{ display: "flex", flexDirection: "row" }}>
-            <div className="">
-              <div className="col-md-4">
+            <div style={{ width: "30%" }}>
+              <div className="col-md-4 ">
+                {" "}
                 <img
-                  src="https://i.seadn.io/s/primary-drops/0x7e50af303a0422ebec6bc198034a2430bbe0195c/32578588:about:media:fac757ed-80e3-47ba-b2ec-365eeb04f070.gif?auto=format&dpr=1&w=1920"
-                  alt="Solana"
-                  style={{ width: "200px", height: "200px" }}
-                  className="rounded-circle"
+                  src={logo}
+                  alt="logo"
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    textAlign: "center",
+                  }}
                 />
                 <p
                   style={{
@@ -77,7 +84,6 @@ const Footer = () => {
               <div class="col-sm">Liên hệ</div>
               <div class="col-sm">Địa chỉ</div>
               <div class="col-sm">Nhà sản xuất</div>
-              <div class="col-sm">One of three columns</div>
             </div>
           </div>
         </div>
